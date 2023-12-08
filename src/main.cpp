@@ -34,7 +34,7 @@ char* flashRead(int i) {      // i = 0 to 63
   if (ESP.flashRead(flashAddress,(uint32_t*)buff_read, sizeof(buff_read)-1)) {
     return buff_read;
   } else  
-    return "";  
+    return 0;  
 }
 
 void flashErase() {
@@ -49,8 +49,8 @@ void flashErase() {
 // ==================================================
 char data1[100] = "";
 char data2[100] = "";
-float sensor_correction_Float = NULL;
-float sensor_correction_Float2 = NULL;
+float sensor_correction_Float = 0.0;
+float sensor_correction_Float2 = 0.0;
 String sensor_correction_String;
 String sensor_correction_String2;
 bool flag_html_write = false;
@@ -140,9 +140,9 @@ void Wifi_Setup() {
   wm.addParameter(&custom_mqtt_server);
   wm.addParameter(&custom_sensor_correction);
 
-  wm.setConnectTimeout(6);
-  wm.setSaveConnectTimeout(10);
-  wm.setConfigPortalTimeout(10);
+  wm.setConnectTimeout(15);
+  wm.setSaveConnectTimeout(30);
+  wm.setConfigPortalTimeout(60);
   if (!wm.autoConnect(AP_SSID, AP_PWD)) {
     Serial.println("failed to connect and hit timeout");
     delay(100);
@@ -184,6 +184,19 @@ PubSubClient client(espClient);
 
 long lastMsg = 0;
 
+void callback(char* topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+}
+
 void connect_mqttServer() {
 
   // wm.autoConnect(AP_SSID, AP_PWD);
@@ -219,20 +232,6 @@ void connect_mqttServer() {
       delay(1000);
     }
   }
-}
-
-//this function will be executed whenever there is data available on subscribed topics
-void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageTemp;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
-  }
-  Serial.println();
 }
 
 // ==================================================
@@ -403,6 +402,40 @@ void task_isr() {
 }
 
 // ==================================================
+// Task Function Define
+// ==================================================
+// Scheduler runner;
+void t1Callback() { 
+  task_isr();
+  // Serial.println("t1 ======================");
+}
+
+void t2Callback() {
+  task_temp();
+  Serial.println("t2 ======================");
+}
+
+void t3Callback() {
+  Serial.println("t3 ======================");
+}
+
+Task t1(300, TASK_FOREVER, &t1Callback);
+Task t2(1500, TASK_FOREVER, &t2Callback);
+Task t3(1000, TASK_FOREVER, &t3Callback);
+
+void task_setup() {
+  runner.init();
+  runner.addTask(t1);
+  runner.addTask(t2);
+  runner.addTask(t3);
+  t1.enable();
+  t2.enable();
+  // t3.enable();
+}
+// Task Function END of Line
+// ==================================================
+
+// ==================================================
 // System Setup
 // ==================================================
 void setup () {
@@ -422,38 +455,3 @@ void loop () {
   runner.execute();
   doWiFiManager();
 }
-
-// ==================================================
-// Task Function Define
-// ==================================================
-// Scheduler runner;
-
-Task t1(300, TASK_FOREVER, &t1Callback);
-Task t2(1500, TASK_FOREVER, &t2Callback);
-Task t3(1000, TASK_FOREVER, &t3Callback);
-
-void task_setup() {
-  runner.init();
-  runner.addTask(t1);
-  runner.addTask(t2);
-  runner.addTask(t3);
-  t1.enable();
-  t2.enable();
-  // t3.enable();
-}
-
-void t1Callback() { 
-  task_isr();
-  // Serial.println("t1 ======================");
-}
-
-void t2Callback() {
-  task_temp();
-  Serial.println("t2 ======================");
-}
-
-void t3Callback() {
-  Serial.println("t3 ======================");
-}
-// Task Function END of Line
-// ==================================================
