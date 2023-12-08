@@ -1,3 +1,8 @@
+using namespace std;
+
+#include <iostream>
+#include "1_esg_sensor_ch2o.h"
+
 #include <TaskScheduler.h>
 #include <WiFiManager.h>
 #include <WebServer.h>
@@ -416,6 +421,12 @@ void t2Callback() {
 }
 
 void t3Callback() {
+  int result = 0;
+
+  result = myFunction(2, 3);
+
+  delay(2000);
+  Serial.printf("myFunction ==>> %d \n", result);
   Serial.println("t3 ======================");
 }
 
@@ -430,7 +441,7 @@ void task_setup() {
   runner.addTask(t3);
   t1.enable();
   t2.enable();
-  // t3.enable();
+  t3.enable();
 }
 // Task Function END of Line
 // ==================================================
