@@ -1,0 +1,93 @@
+#include <TaskScheduler.h>
+#include <WiFiManager.h>
+
+Scheduler runner;
+
+// ==================================================
+// Wifi html keyin id/pwd
+// ==================================================
+#define TRIGGER_PIN 0
+int timeout = 100;
+
+WebServer server(80);
+char mqtt_server[40];
+char mqtt_port[6] = "1883";
+WiFiManager wm;
+WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
+
+void wm_para(){
+  wm.addParameter(&custom_mqtt_server);
+
+  // wm.resetSettings();
+  if (!wm.autoConnect("ESP32", "00000000")) {
+    delay(100);
+    ESP.restart();
+    delay(100);
+  }
+}
+
+void wifi_setup(){
+  WiFi.mode(WIFI_STA);
+  pinMode(TRIGGER_PIN, INPUT_PULLUP);
+  wm_para();
+}
+
+void wifi_loop(){
+  if ( digitalRead(TRIGGER_PIN) == LOW) {
+    WiFiManager wm;  
+    wm.setConfigPortalTimeout(timeout);
+
+    if (!wm.startConfigPortal("溫度ESP32")) {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      ESP.restart();
+      delay(5000);
+    }
+    Serial.println("connected...yeey :)");
+  }
+}
+
+// ==================================================
+// Arduino Architecture setup/loop
+// ==================================================
+void setup () {
+  Serial.begin(115200);
+  wifi_setup();
+  task_setup();
+}
+
+void loop () {
+  runner.execute();
+  wifi_loop();
+}
+
+// ==================================================
+// Task Function Define
+// ==================================================
+Task t1(5000, TASK_FOREVER, &t1Callback);
+Task t2(100000, TASK_FOREVER, &t2Callback);
+Task t3(100000, TASK_FOREVER, &t3Callback);
+
+void task_setup() {
+  runner.init();
+  runner.addTask(t1);
+  runner.addTask(t2);
+  runner.addTask(t3);
+  t1.enable();
+  t2.enable();
+  t3.enable();
+}
+
+void t1Callback() {
+    Serial.println("t1 ...");
+}
+
+void t2Callback() {
+    Serial.println("t2 ...");
+}
+
+void t3Callback() {
+    Serial.println("t3 ...");
+}
+// Task Function END of Line
+// ==================================================

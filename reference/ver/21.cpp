@@ -1,6 +1,7 @@
 using namespace std;
 
 #include <iostream>
+#include <calculator.h>
 #include <Arduino.h>
 
 #include <TaskScheduler.h>
@@ -10,9 +11,6 @@ using namespace std;
 #include <Adafruit_AHTX0.h>
 #include <FS.h>
 #include <SPIFFS.h>
-
-#include <calculator.h>
-#include <sensor_co2.h>
 
 Scheduler runner;
 
@@ -141,24 +139,6 @@ void SPIFFS_totol_size(){
   Serial.printf("SPIFFS totalBytes: %d (Bytes)\n", SPIFFS.totalBytes());
   Serial.printf("SPIFFS usedBytes: %d (Bytes)\n", SPIFFS.usedBytes());
 }
-
-// ==================================================
-// Sensor UART and hard define
-// ==================================================
-#define SEN Serial1
-#define RXD2 18
-#define TXD2 19
-
-
-void serial_monitor()
-{
-  // Serial.begin(115200);
-  SEN.begin(9600, SERIAL_8N1, RXD2, TXD2);
-  SEN.setTimeout(1000);
-
-  Serial.println("=======================11111111111111");
-}
-
 
 // ==================================================
 // Wifi html keyin id/pwd
@@ -399,26 +379,17 @@ void connect_mqttServer() {
 // AHT20_Setup
 // ==================================================
 Adafruit_AHTX0 aht;
-bool is_AHT = false;
 
 void AHT20_Setup() {
   // AHT20
-  if (! aht.begin()) 
-  {
+  if (! aht.begin()) {
     Serial.println("Could not find AHT? Check wiring");
-    Serial.println("Could not find AHT? Check wiring");
-    Serial.println("Could not find AHT? Check wiring");
+    while (1) delay(10);
   }
-  else
-  {
-    Serial.println("");
-    Serial.println("AHT10 or AHT20 found");
-    Serial.println("");
-
-    is_AHT = true;
-  }
+  Serial.println("");
+  Serial.println("AHT10 or AHT20 found");
+  Serial.println("");
 }
-
 
 void read_sensor_sn() {
   SPIFFS_file3_read();
@@ -595,13 +566,7 @@ void t1Callback() {
 }
 
 void t2Callback() {
-
-  if(is_AHT == true){
-    task_temp();
-  }
-
-  task_co2(topic_sn);
-  
+  task_temp();
   Serial.println("t2 ======================");
 }
 
@@ -616,7 +581,6 @@ void t3Callback() {
 }
 
 void t4Callback() {
-  sensor_data_transfer();
 
   Serial.println("t4 ======================");
 }
@@ -624,7 +588,7 @@ void t4Callback() {
 Task t1(1000, TASK_FOREVER, &t1Callback);
 Task t2(2000, TASK_FOREVER, &t2Callback);
 Task t3(5000, TASK_FOREVER, &t3Callback);
-Task t4(1000, TASK_FOREVER, &t4Callback);
+Task t4(8000, TASK_FOREVER, &t4Callback);
 
 void task_setup() {
   runner.init();
@@ -636,7 +600,7 @@ void task_setup() {
   t1.enable();
   t2.enable();
   // t3.enable();
-  t4.enable();
+  // t4.enable();
 }
 // Task Function END of Line
 // ==================================================
@@ -653,9 +617,9 @@ void setup () {
   Wifi_Setup(); // Wifi html keyin id/pwd
   AHT20_Setup();
   setup_isr();
+
   
   read_sensor_sn();
-  serial_monitor();
 }
 
 // ==================================================

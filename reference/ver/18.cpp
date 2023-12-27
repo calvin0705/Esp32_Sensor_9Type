@@ -1,6 +1,7 @@
 using namespace std;
 
 #include <iostream>
+#include <calculator.h>
 #include <Arduino.h>
 
 #include <TaskScheduler.h>
@@ -10,9 +11,6 @@ using namespace std;
 #include <Adafruit_AHTX0.h>
 #include <FS.h>
 #include <SPIFFS.h>
-
-#include <calculator.h>
-#include <sensor_co2.h>
 
 Scheduler runner;
 
@@ -24,7 +22,7 @@ bool First_set_mqtt = true;
 
 const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 const uint32_t addressStart = 0x3FA000; 
-// const uint32_t addressStart = 0x3A0000; 
+// const uint32_t addressEnd   = 0x3FAFFF;
 
 void flashWrite(char data[len], int i) {      // i = 0 to 63
   uint32_t flashAddress = addressStart + i*len;
@@ -118,11 +116,8 @@ void SPIFFS_file2_read(){
 // data3 "/test3.txt"  for mqtt tpoic
 void SPIFFS_file3_write(){
   File file1_w = SPIFFS.open("/test3.txt", FILE_WRITE);
-  delay(10);
   file1_w.write((uint8_t *)data3, strlen(data3));
-  delay(1000);
   file1_w.close();
-  delay(10);
 }
 
 void SPIFFS_file3_read(){
@@ -143,61 +138,8 @@ void SPIFFS_totol_size(){
 }
 
 // ==================================================
-// Sensor UART and hard define
-// ==================================================
-#define SEN Serial1
-#define RXD2 18
-#define TXD2 19
-
-
-void serial_monitor()
-{
-  // Serial.begin(115200);
-  SEN.begin(9600, SERIAL_8N1, RXD2, TXD2);
-  SEN.setTimeout(1000);
-
-  Serial.println("=======================11111111111111");
-}
-
-
-// ==================================================
 // Wifi html keyin id/pwd
 // ==================================================
-const char* ssid = "Aoe";
-const char* password = "00000000";
-
-int wifi_status;
-
-void default_wifi() {
-
-  wifi_status = WiFi.begin(ssid, password);
-  Serial.printf("wifi_status1111 ===========>>> %d \n ", wifi_status);
-
-  int c=0;
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(". \n");
-    // Serial.println("A");
-    c=c+1;
-    if(c>10){
-      // ESP.restart();
-      // bypass to use html setup wifi.
-      Serial.println("break");
-      Serial.println("break");
-      Serial.println("break");
-      break;
-    }
-  }
-
-  wifi_status = WiFi.status(); // "WL_CONNECTED = 3," "WL_DISCONNECTED = 6"
-  Serial.printf("wifi_status2222 =========================>>> %d \n ", WiFi.status());
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-}
-
 #define AP_SSID_1 "太平洋_1"
 #define AP_SSID_2 "廣州炒麵_2"
 #define AP_PWD  "00000000"
@@ -267,28 +209,11 @@ void saveParamCallback(){
   String_mqtt              = getParam("customfieldid_1");
   topic_sn                 = getParam("customfieldid_2");
   sensor_correction_String = getParam("customfieldid_3");
-
-  // =====================
-  // mqtt topic
-  topic_sn.toCharArray(data3, 20);
+  
+  topic_sn.toCharArray(data3, 100);
   SPIFFS_file3_write();
 
-  // =====================
-  // mqtt server ip
-  String_mqtt.toCharArray(mqtt_server, 40);
-  Serial.printf("mqtt_server ===>>>> %s \n", mqtt_server);
-  if(String_mqtt.indexOf('.') != -1){
-      Serial.println("flashErase / flashWrite");
-      delay(100);
-      flashErase();
-      delay(100);
-      flashWrite(mqtt_server, 0);
-      delay(100);
-      First_set_mqtt = false;
-  }
-
   flag_html_write = true;
-  Serial.println("saveParamCallback =========================  END ! ");
 }
 
 void Wifi_Setup() {
@@ -355,19 +280,18 @@ void callback(char* topic, byte* message, unsigned int length) {
 void connect_mqttServer() {
 
   // wm.autoConnect(AP_SSID, AP_PWD);
-  delay(1000);
 
   if (!client.connected()) {
-    // String_mqtt.toCharArray(mqtt_server, 40);
-    // Serial.printf("mqtt_server ===>>>> %s \n", mqtt_server); // mqtt server ip
+    String_mqtt.toCharArray(mqtt_server, 40);
+    Serial.printf("mqtt_server ===>>>> %s \n", mqtt_server); // mqtt server ip
 
-    // if((String_mqtt.indexOf('.') != -1) && (First_set_mqtt == true)){
-    //   Serial.println("flashErase / flashWrite");
-    //   flashErase();
-    //   flashWrite(mqtt_server, 0);
-    //   delay(10);
-    //   First_set_mqtt = false;
-    // }
+    if((String_mqtt.indexOf('.') != -1) && (First_set_mqtt == true)){
+      Serial.println("flashErase / flashWrite");
+      flashErase();
+      flashWrite(mqtt_server, 0);
+      delay(10);
+      First_set_mqtt = false;
+    }
 
     strcpy(mqtt_server, flashRead(0));
     Serial.println("mqtt_server : " + String(mqtt_server));
@@ -388,8 +312,6 @@ void connect_mqttServer() {
       delay(5000);
       First_set_mqtt = true;
 
-      // flashErase();
-      // delay(1000);
       ESP.restart();
     }
   }
@@ -399,26 +321,17 @@ void connect_mqttServer() {
 // AHT20_Setup
 // ==================================================
 Adafruit_AHTX0 aht;
-bool is_AHT = false;
 
 void AHT20_Setup() {
   // AHT20
-  if (! aht.begin()) 
-  {
+  if (! aht.begin()) {
     Serial.println("Could not find AHT? Check wiring");
-    Serial.println("Could not find AHT? Check wiring");
-    Serial.println("Could not find AHT? Check wiring");
+    while (1) delay(10);
   }
-  else
-  {
-    Serial.println("");
-    Serial.println("AHT10 or AHT20 found");
-    Serial.println("");
-
-    is_AHT = true;
-  }
+  Serial.println("");
+  Serial.println("AHT10 or AHT20 found");
+  Serial.println("");
 }
-
 
 void read_sensor_sn() {
   SPIFFS_file3_read();
@@ -477,8 +390,8 @@ void task_temp() {
   char ary_topic_1[20] = "";
   char ary_topic_2[20] = "";
 
-  String str_topic_1 = "cvilux/temp-";
-  String str_topic_2 = "cvilux/humi-";
+  String str_topic_1 = "cvilux/temp";
+  String str_topic_2 = "cvilux/humi";
 
   str_topic_1 = str_topic_1 + topic_sn;
   str_topic_1.toCharArray(ary_topic_1, 20);
@@ -595,13 +508,7 @@ void t1Callback() {
 }
 
 void t2Callback() {
-
-  if(is_AHT == true){
-    task_temp();
-  }
-
-  task_co2(topic_sn);
-  
+  task_temp();
   Serial.println("t2 ======================");
 }
 
@@ -616,7 +523,6 @@ void t3Callback() {
 }
 
 void t4Callback() {
-  sensor_data_transfer();
 
   Serial.println("t4 ======================");
 }
@@ -624,7 +530,7 @@ void t4Callback() {
 Task t1(1000, TASK_FOREVER, &t1Callback);
 Task t2(2000, TASK_FOREVER, &t2Callback);
 Task t3(5000, TASK_FOREVER, &t3Callback);
-Task t4(1000, TASK_FOREVER, &t4Callback);
+Task t4(8000, TASK_FOREVER, &t4Callback);
 
 void task_setup() {
   runner.init();
@@ -636,7 +542,7 @@ void task_setup() {
   t1.enable();
   t2.enable();
   // t3.enable();
-  t4.enable();
+  // t4.enable();
 }
 // Task Function END of Line
 // ==================================================
@@ -646,23 +552,21 @@ void task_setup() {
 // ==================================================
 void setup () {
   Serial.begin(115200);
-  // default_wifi();
-  SPIFFS_begin();
   
   task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd
   AHT20_Setup();
   setup_isr();
-  
+
+  SPIFFS_begin();
   read_sensor_sn();
-  serial_monitor();
 }
 
 // ==================================================
 // System Main Loop
 // ==================================================
 void loop () {
-  checkButton();
   runner.execute();
+  checkButton();
   delay(1000);
 }

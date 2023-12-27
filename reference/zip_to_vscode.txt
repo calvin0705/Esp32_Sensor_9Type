@@ -1,0 +1,3 @@
+pio lib install C:\Users\calvi\Downloads\Adafruit_AHTX0-master.zip
+pio lib install C:\Users\calvi\Documents\PlatformIO\Projects\esg_env_sensor\lib\Adafruit_AHTX0-master.zip
+C:\Users\calvi\Documents\PlatformIO\Projects\esg_env_sensor\lib
