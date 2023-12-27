@@ -10,6 +10,7 @@ using namespace std;
 #include <Adafruit_AHTX0.h>
 #include <FS.h>
 #include <SPIFFS.h>
+#include <WiFiClient.h>
 
 #include <calculator.h>
 #include <sensor_co2.h>
@@ -18,6 +19,10 @@ Scheduler runner;
 
 char* flashRead(int i);
 void callback(char* topic, byte* message, unsigned int length);
+void connect_mqttServer();
+void client_publish(const char *topic, const char *payload);
+void client_conn();
+void connect_mqttServer();
 
 // ==================================================
 // Flash Read / Write
@@ -340,8 +345,6 @@ void Wifi_Setup() {
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-long lastMsg = 0;
-
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
@@ -361,40 +364,7 @@ void connect_mqttServer() {
   delay(1000);
 
   if (!client.connected()) {
-    // String_mqtt.toCharArray(mqtt_server, 40);
-    // Serial.printf("mqtt_server ===>>>> %s \n", mqtt_server); // mqtt server ip
-
-    // if((String_mqtt.indexOf('.') != -1) && (First_set_mqtt == true)){
-    //   Serial.println("flashErase / flashWrite");
-    //   flashErase();
-    //   flashWrite(mqtt_server, 0);
-    //   delay(10);
-    //   First_set_mqtt = false;
-    // }
-
-    strcpy(mqtt_server, flashRead(0));
-    Serial.println("mqtt_server : " + String(mqtt_server));
-    client.setServer(mqtt_server,1883);
-    client.setCallback(callback);
-
-    //now attemt to connect to MQTT server
-    Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    if (client.connect("ESP32_client1")) { // !!! Change the name of client here if multiple ESP32 are connected
-      Serial.println("connected");
-      client.subscribe("rpi/broadcast");
-    } 
-    else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" trying again in 2 seconds");
-      delay(5000);
-      First_set_mqtt = true;
-
-      // flashErase();
-      // delay(1000);
-      ESP.restart();
-    }
+    client_conn();
   }
 }
 
@@ -422,10 +392,34 @@ void AHT20_Setup() {
   }
 }
 
-
 void read_sensor_sn() {
   SPIFFS_file3_read();
   topic_sn = mqtt_topic_sn;
+}
+
+void client_publish(const char *topic, const char *payload){
+  client.publish(topic, payload);
+}
+
+void client_conn(){
+  strcpy(mqtt_server, flashRead(0));
+    Serial.println("mqtt_server : " + String(mqtt_server));
+    client.setServer(mqtt_server,1883);
+    client.setCallback(callback);
+
+  if (client.connect("ESP32_client1")) { // !!! Change the name of client here if multiple ESP32 are connected
+    Serial.println("connected");
+    client.subscribe("rpi/broadcast");
+  } 
+  else {
+    Serial.print("failed, rc=");
+    Serial.print(client.state());
+    Serial.println(" trying again in 2 seconds");
+    delay(5000);
+    First_set_mqtt = true;
+
+    ESP.restart();
+  }
 }
 
 void task_temp() {
@@ -649,7 +643,6 @@ void task_setup() {
 // ==================================================
 void setup () {
   Serial.begin(115200);
-  // default_wifi();
   SPIFFS_begin();
   
   task_setup(); // Run Task
