@@ -14,6 +14,7 @@ using namespace std;
 
 #include <calculator.h>
 #include <sensor_co2.h>
+#include <SPIFFS_file.h>
 
 Scheduler runner;
 
@@ -63,16 +64,19 @@ void flashErase() {
 // ==================================================
 // SPIFFS Define
 // ==================================================
-char data1[20] = "";
-char data2[20] = "";
-char data3[20] = "";
+// char data1[20] = "";
+// char data2[20] = "";
+// char data3[20] = "";
 float sensor_correction_Float = 0.0;
 float sensor_correction_Float2 = 0.0;
-int mqtt_topic_sn = 0;
+// int mqtt_topic_sn = 0;
 String sensor_correction_String;
 String sensor_correction_String2;
 String sensor_correction_String3;
 bool flag_html_write = false;
+
+char* mqtt_topic_sn = {};
+char mqtt_topic_sn_arry[20] = "";
 
 void SPIFFS_begin(){
   if (SPIFFS.begin(true)){
@@ -124,26 +128,31 @@ void SPIFFS_file2_read(){
 }
 
 // data3 "/test3.txt"  for mqtt tpoic
-void SPIFFS_file3_write(){
-  File file1_w = SPIFFS.open("/test3.txt", FILE_WRITE);
-  delay(10);
-  file1_w.write((uint8_t *)data3, strlen(data3));
-  delay(1000);
-  file1_w.close();
-  delay(10);
-}
+// void SPIFFS_file3_write(){
+//   File file1_w = SPIFFS.open("/test3.txt", FILE_WRITE);
+//   delay(10);
+//   file1_w.write((uint8_t *)data3, strlen(data3));
+//   delay(1000);
+//   file1_w.close();
+//   delay(10);
+// }
 
-void SPIFFS_file3_read(){
-  File file1_r = SPIFFS.open("/test3.txt", FILE_READ);
-  int n = 0;
-  while (file1_r.available())
-  {
-    data3[n] = file1_r.read();
-    n = n + 1;
-  }
-  mqtt_topic_sn = atoi(data3);
-  file1_r.close();
-}
+// void SPIFFS_file3_read(){
+//   File file1_r = SPIFFS.open("/test3.txt", FILE_READ);
+//   int n = 0;
+//   while (file1_r.available())
+//   {
+//     data3[n] = file1_r.read();
+//     n = n + 1;
+//   }
+//   mqtt_topic_sn = atoi(data3);
+//   file1_r.close();
+// }
+
+
+
+// SPIFFS_write("test3.txt", data3);
+// mqtt_topic_sn = SPIFFS_read("test3.txt", data3);
 
 void SPIFFS_totol_size(){
   Serial.printf("SPIFFS totalBytes: %d (Bytes)\n", SPIFFS.totalBytes());
@@ -279,7 +288,8 @@ void saveParamCallback(){
   // =====================
   // mqtt topic
   topic_sn.toCharArray(data3, 20);
-  SPIFFS_file3_write();
+  // SPIFFS_file3_write();
+  SPIFFS_write("test3.txt", data3);
 
   // =====================
   // mqtt server ip
@@ -393,8 +403,10 @@ void AHT20_Setup() {
 }
 
 void read_sensor_sn() {
-  SPIFFS_file3_read();
-  topic_sn = mqtt_topic_sn;
+  // SPIFFS_file3_read();
+  mqtt_topic_sn = SPIFFS_read("test3.txt", data3);
+  strcpy(mqtt_topic_sn_arry, mqtt_topic_sn);
+  topic_sn = String(mqtt_topic_sn_arry);
 }
 
 void client_publish(const char *topic, const char *payload){
