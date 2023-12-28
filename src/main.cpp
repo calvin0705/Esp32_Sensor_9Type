@@ -78,86 +78,12 @@ bool flag_html_write = false;
 char* mqtt_topic_sn = {};
 char mqtt_topic_sn_arry[20] = "";
 
-void SPIFFS_begin(){
-  if (SPIFFS.begin(true)){
-    Serial.println("SPIFFS file system create successful");
-  }
-}
+// void SPIFFS_write(String file_name_num, char* data_point);
+// SPIFFS_write("/test3.txt", data3);
 
-// data1 "/test1.txt"  for Temp data correction
-void SPIFFS_file1_write(){
-  File file1_w = SPIFFS.open("/test1.txt", FILE_WRITE);
-  file1_w.write((uint8_t *)data1, strlen(data1));
-  file1_w.close();
-
-  Serial.print("SPIFFS_file1_write ***************************************** !!!!! \n");
-}
-
-void SPIFFS_file1_read(){
-  File file1_r = SPIFFS.open("/test1.txt", FILE_READ);
-
-  int n = 0;
-  while (file1_r.available())
-  {
-    data1[n] = file1_r.read();
-    n = n + 1;
-  }
-  sensor_correction_Float = atof(data1);
-  file1_r.close();
-}
-
-// data2 "/test2.txt"  for Humi data correction
-void SPIFFS_file2_write(){
-  File file1_w = SPIFFS.open("/test2.txt", FILE_WRITE);
-  file1_w.write((uint8_t *)data2, strlen(data2));
-  file1_w.close();
-}
-
-void SPIFFS_file2_read(){
-  File file1_r = SPIFFS.open("/test2.txt", FILE_READ);
-
-  int n = 0;
-  while (file1_r.available())
-  {
-    data2[n] = file1_r.read();
-    n = n + 1;
-  }
-  
-  sensor_correction_Float2 = atof(data2);
-  file1_r.close();
-}
-
-// data3 "/test3.txt"  for mqtt tpoic
-// void SPIFFS_file3_write(){
-//   File file1_w = SPIFFS.open("/test3.txt", FILE_WRITE);
-//   delay(10);
-//   file1_w.write((uint8_t *)data3, strlen(data3));
-//   delay(1000);
-//   file1_w.close();
-//   delay(10);
-// }
-
-// void SPIFFS_file3_read(){
-//   File file1_r = SPIFFS.open("/test3.txt", FILE_READ);
-//   int n = 0;
-//   while (file1_r.available())
-//   {
-//     data3[n] = file1_r.read();
-//     n = n + 1;
-//   }
-//   mqtt_topic_sn = atoi(data3);
-//   file1_r.close();
-// }
-
-
-
-// SPIFFS_write("test3.txt", data3);
-// mqtt_topic_sn = SPIFFS_read("test3.txt", data3);
-
-void SPIFFS_totol_size(){
-  Serial.printf("SPIFFS totalBytes: %d (Bytes)\n", SPIFFS.totalBytes());
-  Serial.printf("SPIFFS usedBytes: %d (Bytes)\n", SPIFFS.usedBytes());
-}
+// sensor_correction_Float2 = SPIFFS_read_float("test2.txt", data2);
+// String SPIFFS_read(String file_name_num, char* data_point);
+// topic_sn = SPIFFS_read("test3.txt", data3);
 
 // ==================================================
 // Sensor UART and hard define
@@ -288,8 +214,8 @@ void saveParamCallback(){
   // =====================
   // mqtt topic
   topic_sn.toCharArray(data3, 20);
-  // SPIFFS_file3_write();
-  SPIFFS_write("test3.txt", data3);
+  
+  SPIFFS_write("/test3.txt", data3);
 
   // =====================
   // mqtt server ip
@@ -439,14 +365,14 @@ void task_temp() {
     sensor_correction_Float = sensor_correction_String.toFloat();
 
     if(sensor_correction_String != ""){
-      SPIFFS_file1_write();
+      SPIFFS_write("/test1.txt", data1);
       delay(10);
       flag_html_write = false;
     }
   }
 
-  SPIFFS_file1_read();
-  SPIFFS_file2_read();
+  sensor_correction_Float  = SPIFFS_read_float("test1.txt", data1);
+  sensor_correction_Float2 = SPIFFS_read_float("test2.txt", data2);
   delay(10);
 
   // ==================================================
@@ -549,45 +475,49 @@ void task_isr() {
   if (Request1){
     Serial.println("Interrupt Request Received! 1111111111111");
     Request1 = false;
-    SPIFFS_file1_read();
+    sensor_correction_Float = SPIFFS_read_float("test1.txt", data1);
     sensor_correction_Float = sensor_correction_Float + 1;
     sensor_correction_String = String(sensor_correction_Float);
     sensor_correction_String.toCharArray(data1, 100);
     
-    SPIFFS_file1_write();
+    // SPIFFS_file1_write();
+    SPIFFS_write("/test1.txt", data1);
   }
 
   if (Request2){
     Serial.println("Interrupt Request Received! 222222222222222");
     Request2 = false;
-    SPIFFS_file1_read();
+    sensor_correction_Float = SPIFFS_read_float("test1.txt", data1);
     sensor_correction_Float = sensor_correction_Float - 1;
     sensor_correction_String = String(sensor_correction_Float);
     sensor_correction_String.toCharArray(data1, 100);
     
-    SPIFFS_file1_write();
+    // SPIFFS_file1_write();
+    SPIFFS_write("/test1.txt", data1);
   }
 
   if (Request3){
     Serial.println("Interrupt Request Received! 3333333333333");
     Request3 = false;
-    SPIFFS_file2_read();
+    sensor_correction_Float2 = SPIFFS_read_float("test2.txt", data2);
     sensor_correction_Float2 = sensor_correction_Float2 + 1;
     sensor_correction_String2 = String(sensor_correction_Float2);
     sensor_correction_String2.toCharArray(data2, 100);
     
-    SPIFFS_file2_write();
+    // SPIFFS_file2_write();
+    SPIFFS_write("/test2.txt", data2);
   }
 
   if (Request4){
     Serial.println("Interrupt Request Received! 44444444444444");
     Request4 = false;
-    SPIFFS_file2_read();
+    sensor_correction_Float2 = SPIFFS_read_float("test2.txt", data2);
     sensor_correction_Float2 = sensor_correction_Float2 - 1;
     sensor_correction_String2 = String(sensor_correction_Float2);
     sensor_correction_String2.toCharArray(data2, 100);
     
-    SPIFFS_file2_write();
+    // SPIFFS_file2_write();
+    SPIFFS_write("/test2.txt", data2);
   }
 }
 
