@@ -403,10 +403,7 @@ void AHT20_Setup() {
 }
 
 void read_sensor_sn() {
-  // SPIFFS_file3_read();
-  mqtt_topic_sn = SPIFFS_read("test3.txt", data3);
-  strcpy(mqtt_topic_sn_arry, mqtt_topic_sn);
-  topic_sn = String(mqtt_topic_sn_arry);
+  topic_sn = SPIFFS_read("test3.txt", data3);
 }
 
 void client_publish(const char *topic, const char *payload){
