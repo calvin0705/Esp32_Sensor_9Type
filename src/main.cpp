@@ -75,7 +75,8 @@ String sensor_correction_String2;
 String sensor_correction_String3;
 bool flag_html_write = false;
 
-char* mqtt_topic_sn = {};
+// char* mqtt_topic_sn = {};
+char mqtt_topic_sn[20] = "";
 char mqtt_topic_sn_arry[20] = "";
 
 // void SPIFFS_write(String file_name_num, char* data_point);
@@ -98,8 +99,6 @@ void serial_monitor()
   // Serial.begin(115200);
   SEN.begin(9600, SERIAL_8N1, RXD2, TXD2);
   SEN.setTimeout(1000);
-
-  Serial.println("=======================11111111111111");
 }
 
 
@@ -201,6 +200,27 @@ String getParam(String name){
 
 String topic_sn;
 
+void SPIFFS_file3_write(){
+  File file1_w = SPIFFS.open("/test3.txt", FILE_WRITE);
+  delay(10);
+  file1_w.write((uint8_t *)data3, strlen(data3));
+  delay(1000);
+  file1_w.close();
+  delay(10);
+}
+
+void SPIFFS_file3_read(){
+  File file1_r = SPIFFS.open("/test3.txt", FILE_READ);
+  int n = 0;
+  while (file1_r.available())
+  {
+    data3[n] = file1_r.read();
+    n = n + 1;
+  }
+  mqtt_topic_sn = data3;
+  file1_r.close();
+}
+
 void saveParamCallback(){
   Serial.println("[CALLBACK] saveParamCallback fired");
   Serial.println("PARAM customfieldid_1 = " + getParam("customfieldid_1")); // mqtt server ip
@@ -215,7 +235,12 @@ void saveParamCallback(){
   // mqtt topic
   topic_sn.toCharArray(data3, 20);
   
-  SPIFFS_write("/test3.txt", data3);
+  // SPIFFS_write("/test3.txt", data3);
+  // topic_sn = SPIFFS_read("test3.txt", data3);
+  // Serial.printf("topic_sn ===========>>> %s \n ", topic_sn);
+
+SPIFFS_file3_write();
+SPIFFS_file3_read();
 
   // =====================
   // mqtt server ip
