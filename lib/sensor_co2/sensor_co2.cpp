@@ -10,14 +10,6 @@
 #define RXD2 18
 #define TXD2 19
 
-// #define AP_SSID_2 "廣州炒麵_2"
-
-// WiFiClient espClient2;
-// PubSubClient client2(espClient2);
-// WiFiManager wm2;
-
-// char mqtt_server2[40];
-
 // ==============================================
 // Define Global Variable
 // ==============================================
@@ -93,15 +85,6 @@ void task_co2(String topic_sn) {
   String str_ppm;
   char str_a[100];
 
-  // if (!client.connected()) 
-  // {
-  //   connect_mqttServer();
-  // }
-  // client.loop();
-
-  // strcpy("192.168.107.203", flashRead(0));
-
-  // client_conn();
   connect_mqttServer();
 
   char ary_topic_1[20] = "";
@@ -117,6 +100,5 @@ void task_co2(String topic_sn) {
   Serial.printf("str_a ==========>> %s\n", str_a);
   
   Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
-  // client.publish(ary_topic_1, str_a); //topic name and send value.
   client_publish(ary_topic_1, str_a);
 }
