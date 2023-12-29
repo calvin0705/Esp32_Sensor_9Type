@@ -10,6 +10,8 @@
 #define RXD2 18
 #define TXD2 19
 
+String NoSensor = "NoSensor";
+
 // ==============================================
 // Define Global Variable
 // ==============================================
@@ -75,6 +77,10 @@ String sensor_data_transfer()
   Serial.print("Read Sensor(ppm) : ");
   Serial.println(ppm);
 
+  if(ppm == 0)
+  {
+    return "NoSensor";
+  }
   return str_ppm;
 }
 
@@ -91,6 +97,8 @@ void task_co2(String topic_sn) {
   String str_topic_1 = "cvilux/CO2-";
 
   str_ppm = sensor_data_transfer();
+  
+
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
 
   str_topic_1 = str_topic_1 + topic_sn;
@@ -100,5 +108,13 @@ void task_co2(String topic_sn) {
   Serial.printf("str_a ==========>> %s\n", str_a);
   
   Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
-  client_publish(ary_topic_1, str_a);
+
+  if(str_ppm == "NoSensor")
+  {
+    Serial.println("No Sensor !!!");
+  }
+  else
+  {
+    client_publish(ary_topic_1, str_a);
+  }
 }
