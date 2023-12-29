@@ -46,6 +46,7 @@ String SPIFFS_read(String file_name_num, char* data_point){
     n = n + 1;
   }
   file1_r.close();
+  delay(10);
   strcpy(trasferArry, data_point);
 
   Serial.println("******************************************************************222222222222");
