@@ -16,6 +16,8 @@ using namespace std;
 #include <sensor_co2.h>
 #include <SPIFFS_file.h>
 
+#include <sensor_cmd.h>
+
 Scheduler runner;
 
 char* flashRead(int i);
@@ -530,7 +532,7 @@ void t3Callback() {
 }
 
 void t4Callback() {
-  sensor_data_transfer();
+  // sensor_data_transfer();
 
   Serial.println("t4 ======================");
 }
@@ -561,6 +563,8 @@ void task_setup() {
 void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
+  
+  sensor_init();
   
   task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd

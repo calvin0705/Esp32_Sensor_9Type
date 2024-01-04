@@ -1,13 +1,9 @@
 #include <Arduino.h>
-#include <iostream>
 #include <PubSubClient.h>
 #include <SPIFFS.h>
 #include <main.h>
-#include <WiFiManager.h>
 #include <WebServer.h>
 #include <sensor_cmd.h>
-
-String NoSensor = "NoSensor";
 
 // ==============================================
 // Define Global Variable
@@ -34,6 +30,13 @@ String sensor_data_transfer()
   read_sensor();
 
   incoming  = SEN.readString();
+
+  for(byte i=0; i<incoming.length(); i++)
+  {
+  Serial.print(incoming[i],HEX);
+  Serial.write(' ');
+  }
+  Serial.println();
   
   ppm1 = incoming[2];
   ppm2 = incoming[3];
