@@ -12,17 +12,18 @@ String NoSensor = "NoSensor";
 // ==============================================
 // Define Global Variable
 // ==============================================
-const int REG = 0;
-int a=0;
-int ppm=0;
-int ppm1=0;
-int ppm2=0;
+
 
 // ==============================================
 // Define Main Loop Function
 // ==============================================
 String sensor_data_transfer()
 {
+  int a=0;
+  int ppm=0;
+  int ppm1=0;
+  int ppm2=0;
+
   char str_a[100];
   char str_d[100];
   char str_mqtt[100];
