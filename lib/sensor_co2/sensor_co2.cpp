@@ -5,10 +5,7 @@
 #include <main.h>
 #include <WiFiManager.h>
 #include <WebServer.h>
-
-#define SEN Serial1
-#define RXD2 18
-#define TXD2 19
+#include <sensor_cmd.h>
 
 String NoSensor = "NoSensor";
 
@@ -20,36 +17,6 @@ int a=0;
 int ppm=0;
 int ppm1=0;
 int ppm2=0;
-
-// ==============================================
-// Define Sensor Initial
-// ==============================================
-void sensor_init()
-{
-  // 切換問答模式
-  SEN.write(0xFF);
-  SEN.write(0x01);
-  SEN.write(0x78);
-  SEN.write(0x41);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x46);
-}
-
-void read_sensor()
-{
-  SEN.write(0xFF);
-  SEN.write(0x01);
-  SEN.write(0x86);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x00);
-  SEN.write(0x79);
-}
 
 // ==============================================
 // Define Main Loop Function
