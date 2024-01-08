@@ -13,10 +13,11 @@ using namespace std;
 #include <WiFiClient.h>
 
 #include <calculator.h>
-#include <sensor_co2.h>
 #include <SPIFFS_file.h>
 
 #include <sensor_cmd.h>
+#include <sensor_co2.h>
+#include <sensor_co.h>
 
 Scheduler runner;
 
@@ -516,7 +517,10 @@ void t2Callback() {
     task_temp();
   }
 
-  task_co2(topic_sn);
+  // task_co2(topic_sn);
+  task_co(topic_sn);
+  // task_pm25(topic_sn);
+  // task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
@@ -532,7 +536,6 @@ void t3Callback() {
 }
 
 void t4Callback() {
-  // sensor_data_transfer();
 
   Serial.println("t4 ======================");
 }
@@ -564,7 +567,9 @@ void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
   
+  clear_uart_buffer();
   sensor_init();
+  clear_uart_buffer();
   
   task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd

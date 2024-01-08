@@ -45,3 +45,17 @@ void read_sensor()
   SEN.write(0x00);
   SEN.write(0x79);
 }
+
+void clear_uart_buffer()
+{
+  String incoming = "";
+  String str_ppm;
+  
+  read_sensor();
+  incoming  = SEN.readString();
+  delay(100);
+
+  read_sensor();
+  incoming  = SEN.readString();
+  delay(100);
+}
