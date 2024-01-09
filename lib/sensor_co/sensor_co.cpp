@@ -91,14 +91,14 @@ void task_co(String topic_sn) {
   
   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
 
-//   if(str_ppm == 0)
-//   {
-//     Serial.println("No Sensor !!!");
-//   }
-//   else
-//   {
-//     client_publish(ary_topic_1, str_a);
-//   }
+  if(f_ppm <= 0)
+  {
+    Serial.println("No Sensor !!!");
+  }
+  else
+  {
+    client_publish(ary_topic_1, str_a);
+  }
 
-  client_publish(ary_topic_1, str_a);
+  // client_publish(ary_topic_1, str_a);
 }
