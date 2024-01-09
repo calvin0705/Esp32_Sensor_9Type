@@ -515,6 +515,7 @@ void t1Callback() {
 }
 
 void t2Callback() {
+  // check_sensor_type();
 
   if(is_AHT == true){
     task_temp();
@@ -522,8 +523,8 @@ void t2Callback() {
 
   // task_co2(topic_sn);
   // task_co(topic_sn);
-  task_pm25(topic_sn);
-  // task_ch2o(topic_sn);
+  // task_pm25(topic_sn);
+  task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
@@ -572,7 +573,6 @@ void setup () {
   
   clear_uart_buffer();
   sensor_init();
-  clear_uart_buffer();
   
   task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd
@@ -581,6 +581,8 @@ void setup () {
   
   read_sensor_sn();
   serial_monitor();
+
+  check_sensor_type();
 }
 
 // ==================================================
