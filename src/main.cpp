@@ -371,8 +371,8 @@ void task_temp() {
   client.loop();
 
   // temp sensor read
-  char str_a[100];
-  char str_b[100];
+  char str_temp_a[100];
+  char str_temp_b[100];
 
   sensors_event_t humidity, temp;
   aht.getEvent(&humidity, &temp);
@@ -385,11 +385,11 @@ void task_temp() {
   humi1 = humidity.relative_humidity;
   humi1 = humi1 + sensor_correction_Float2;
 
-  sprintf(str_a, "%f",temp1);
-  sprintf(str_b, "%f",humi1);
+  sprintf(str_temp_a, "%f",temp1);
+  sprintf(str_temp_b, "%f",humi1);
 
-  Serial.println(str_a);
-  Serial.println(str_b);
+  Serial.println(str_temp_a);
+  Serial.println(str_temp_b);
 
   // read_sensor_sn();
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
@@ -409,9 +409,9 @@ void task_temp() {
   Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
   Serial.println("ary_topic_2 ========>> : " + String(ary_topic_2));
 
-  client.publish(ary_topic_1, str_a); //topic name and send value.
+  client.publish(ary_topic_1, str_temp_a); //topic name and send value.
   delay(1); 
-  client.publish(ary_topic_2, str_b); //topic name and send value.
+  client.publish(ary_topic_2, str_temp_b); //topic name and send value.
 }
 
 // ==================================================

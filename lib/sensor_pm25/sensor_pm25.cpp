@@ -8,7 +8,7 @@
 // ==============================================
 // Define Global Variable
 // ==============================================
-
+bool is_sensor_date = true;
 
 // ==============================================
 // Define Main Loop Function
@@ -57,18 +57,13 @@ float* pm25_data_transfer()
   ppm1 = incoming[6];
   ppm2 = incoming[7];
   f_ppm[2] = (ppm1*256+ppm2);
-//   Serial.printf("f_ppm ============>> %f\n", f_ppm);
-//   Serial.printf("f_ppm ============>> %f\n", f_ppm);
-//   str_ppm = String(ppm);
 
   delay(1000);
 
-//   Serial.print("Read Sensor(ppm) : ");
-//   Serial.println(ppm);
-
   if(f_ppm[0] == 0)
   {
-    return 0;
+    is_sensor_date = false;
+    return f_ppm;
   }
   return f_ppm;
 }
@@ -87,11 +82,15 @@ void task_pm25(String topic_sn) {
   connect_mqttServer();
 
   f_ppm = pm25_data_transfer();
+  if(is_sensor_date == false)
+  {
+    Serial.println("No Sensor, Function will be return !!!");
+    return;
+  }  // If no sensor data, Return for do nothing
+
   Serial.printf("f_ppm ============>> %f\n", *(f_ppm));
   Serial.printf("f_ppm +1 ============>> %f\n", *(f_ppm+1));
   Serial.printf("f_ppm +2 ============>> %f\n", *(f_ppm+2));
-
-  Serial.printf("topic_sn ==>> %s\n", topic_sn);
 
   char ary_topic_1[20] = "";
   String str_topic_1 = "cvilux/PM1_0-";
@@ -106,13 +105,10 @@ void task_pm25(String topic_sn) {
   str_topic_2.toCharArray(ary_topic_2, 20);
   str_topic_3 = str_topic_3 + topic_sn;
   str_topic_3.toCharArray(ary_topic_3, 20);
-  
+
   sprintf(str_a, "%f",*(f_ppm));
   sprintf(str_b, "%f",*(f_ppm+1));
   sprintf(str_c, "%f",*(f_ppm+2));
-
-//   Serial.printf("str_a 123==========>> %s\n", str_a);
-//   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
 
   if(*(f_ppm) <= 0)
   {
@@ -121,12 +117,7 @@ void task_pm25(String topic_sn) {
   else
   {
     client_publish(ary_topic_1, str_a);
-    delay(500);
     client_publish(ary_topic_2, str_b);
-    delay(500);
     client_publish(ary_topic_3, str_c);
-    delay(500);
   }
-
-  // client_publish(ary_topic_1, str_a);
 }
