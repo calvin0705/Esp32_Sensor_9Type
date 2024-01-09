@@ -19,6 +19,7 @@ using namespace std;
 #include <sensor_co2.h>
 #include <sensor_co.h>
 #include <sensor_ch2o.h>
+#include <sensor_pm25.h>
 
 Scheduler runner;
 
@@ -520,8 +521,8 @@ void t2Callback() {
 
   // task_co2(topic_sn);
   // task_co(topic_sn);
-  // task_pm25(topic_sn);
-  task_ch2o(topic_sn);
+  task_pm25(topic_sn);
+  // task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
