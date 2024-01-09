@@ -345,6 +345,7 @@ void client_conn(){
 }
 
 void task_temp() {
+  Serial.println(" task_temp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   int sensor_correction_int = 0;
 
   if(flag_html_write == true){
