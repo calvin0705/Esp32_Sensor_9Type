@@ -337,10 +337,16 @@ void client_conn(){
     client.setServer(mqtt_server,1883);
     client.setCallback(callback);
 
+  const char *client_mac; // uin client name for mqtt client device initial "client.connect(client_mac)"
+  String str_client_mac;
+  str_client_mac = ESP.getEfuseMac();
+
+  client_mac= str_client_mac.c_str();
+
   Serial.println("!!! 12345 ========================================================  !!! 12345 ");
   Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
-  if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
-  // if (client.connect(mac_dev)) {
+  // if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
+  if (client.connect(client_mac)) {
     Serial.println("connected");
     client.subscribe("rpi/broadcast");
   } 
