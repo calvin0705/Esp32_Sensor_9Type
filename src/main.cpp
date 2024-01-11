@@ -147,6 +147,7 @@ WiFiManager wm;
 WiFiManagerParameter custom_field_1;
 WiFiManagerParameter custom_field_2;
 WiFiManagerParameter custom_field_3;
+WiFiManagerParameter custom_field_4;
 
 WebServer server(80);
 char mqtt_server[40];
@@ -189,16 +190,19 @@ String getParam(String name){
 }
 
 String topic_sn;
+String topic_sn2;
 
 void saveParamCallback(){
   Serial.println("[CALLBACK] saveParamCallback fired");
   Serial.println("PARAM customfieldid_1 = " + getParam("customfieldid_1")); // mqtt server ip
   Serial.println("PARAM customfieldid_2 = " + getParam("customfieldid_2")); // mqtt topic
   Serial.println("PARAM customfieldid_3 = " + getParam("customfieldid_3")); // sensor correction
+  // Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // sensor correction
 
   String_mqtt              = getParam("customfieldid_1");
   topic_sn                 = getParam("customfieldid_2");
   sensor_correction_String = getParam("customfieldid_3");
+  // topic_sn2                = getParam("customfieldid_4");
 
   // =====================
   // mqtt topic
@@ -237,12 +241,16 @@ void Wifi_Setup() {
   wm.addParameter(&custom_field_1);
   wm.setSaveParamsCallback(saveParamCallback);
 
-  new (&custom_field_2) WiFiManagerParameter("customfieldid_2", "Number of Sensor(ex:1 代表第1顆 依此類推)", "", customFieldLength,"placeholder=\"\"");
+  new (&custom_field_2) WiFiManagerParameter("customfieldid_2", "Number of Sensor(溫濕度)", "", customFieldLength,"placeholder=\"\"");
   wm.addParameter(&custom_field_2);
   wm.setSaveParamsCallback(saveParamCallback);
 
   // new (&custom_field_3) WiFiManagerParameter("customfieldid_3", "sensor_correction", "", customFieldLength,"placeholder=\"\"");
   // wm.addParameter(&custom_field_3);
+  // wm.setSaveParamsCallback(saveParamCallback);
+
+  // new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(其他)", "", customFieldLength,"placeholder=\"\"");
+  // wm.addParameter(&custom_field_4);
   // wm.setSaveParamsCallback(saveParamCallback);
 
   // std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
@@ -524,8 +532,8 @@ void t2Callback() {
 
   // task_co2(topic_sn);
   // task_co(topic_sn);
-  task_pm25(topic_sn);
-  // task_ch2o(topic_sn);
+  // task_pm25(topic_sn);
+  task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
@@ -560,7 +568,7 @@ void task_setup() {
   t1.enable();
   t2.enable();
   // t3.enable();
-  t4.enable();
+  // t4.enable();
 }
 // Task Function END of Line
 // ==================================================
