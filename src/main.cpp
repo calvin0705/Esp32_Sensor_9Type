@@ -337,8 +337,10 @@ void client_conn(){
     client.setServer(mqtt_server,1883);
     client.setCallback(callback);
 
-  // !!! 12345
+  Serial.println("!!! 12345 ========================================================  !!! 12345 ");
+  Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
   if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
+  // if (client.connect(mac_dev)) {
     Serial.println("connected");
     client.subscribe("rpi/broadcast");
   } 
@@ -355,6 +357,8 @@ void client_conn(){
 
 void task_temp() {
   Serial.println(" task_temp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  // Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
+
   int sensor_correction_int = 0;
 
   if(flag_html_write == true){
