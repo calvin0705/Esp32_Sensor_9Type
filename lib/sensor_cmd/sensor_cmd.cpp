@@ -49,33 +49,46 @@ void read_sensor()
 void clear_uart_buffer()
 {
   String incoming = "";
-  
-  read_sensor();
-  incoming  = SEN.readString();
-  delay(100);
+  int i = 0;
 
-  read_sensor();
-  incoming  = SEN.readString();
-  delay(100);
+  for(i=0;i<5;i++)
+  {
+    SEN.setTimeout(500);
+    read_sensor();
+    incoming  = SEN.readString();
+
+    Serial.printf("clear_uart_buffer i ================>> %d \n", i);
+  }
 }
 
 void check_sensor_type()
 {
-  sensor_auto_update();
-  sensor_auto_update();
-  sensor_auto_update();
-
   int ppm=0;
   int ppm1=0;
   int ppm2=0;
   int sen_type=0;
-
   char str_a[100];
-
   String incoming = "";
+
+  clear_uart_buffer();
+  sensor_auto_update();
+  clear_uart_buffer();
+  sensor_auto_update();
   
   read_sensor();
+  incoming  = SEN.readString();
+  sen_type = incoming[1];
+  if(sen_type == 23)
+  {
+    Serial.println("Sensor is CH2O ---------------------------!!!");
+  }
 
+  clear_uart_buffer();
+  sensor_init();
+  sensor_init();
+  clear_uart_buffer();
+
+  read_sensor();
   incoming  = SEN.readString();
 
   for(byte i=0; i<incoming.length(); i++)

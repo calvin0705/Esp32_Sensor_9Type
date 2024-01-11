@@ -65,6 +65,7 @@ float* pm25_data_transfer()
     is_sensor_date = false;
     return f_ppm;
   }
+  is_sensor_date = true;
   return f_ppm;
 }
 

@@ -329,7 +329,8 @@ void client_conn(){
     client.setServer(mqtt_server,1883);
     client.setCallback(callback);
 
-  if (client.connect("ESP32_client1")) { // !!! Change the name of client here if multiple ESP32 are connected
+  // !!! 12345
+  if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
     Serial.println("connected");
     client.subscribe("rpi/broadcast");
   } 
@@ -523,8 +524,8 @@ void t2Callback() {
 
   // task_co2(topic_sn);
   // task_co(topic_sn);
-  // task_pm25(topic_sn);
-  task_ch2o(topic_sn);
+  task_pm25(topic_sn);
+  // task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
@@ -570,8 +571,7 @@ void task_setup() {
 void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
-  
-  clear_uart_buffer();
+
   sensor_init();
   
   task_setup(); // Run Task
@@ -582,7 +582,7 @@ void setup () {
   read_sensor_sn();
   serial_monitor();
 
-  check_sensor_type();
+  // check_sensor_type();
 }
 
 // ==================================================
