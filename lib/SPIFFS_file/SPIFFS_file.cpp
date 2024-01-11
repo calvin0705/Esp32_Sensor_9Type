@@ -31,7 +31,7 @@ void SPIFFS_write(String file_name_num, char* data_point){
 String SPIFFS_read_string(String file_name_num){
   File file1_r = SPIFFS.open(file_name_num, FILE_READ);
   int n = 0;
-  char data[20];
+  char data[50];
 
   while (file1_r.available())
   {
