@@ -197,20 +197,20 @@ void saveParamCallback(){
   Serial.println("PARAM customfieldid_1 = " + getParam("customfieldid_1")); // mqtt server ip
   Serial.println("PARAM customfieldid_2 = " + getParam("customfieldid_2")); // mqtt topic
   Serial.println("PARAM customfieldid_3 = " + getParam("customfieldid_3")); // sensor correction
-  // Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // sensor correction
+  Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // mqtt topic
 
   String_mqtt              = getParam("customfieldid_1");
   topic_sn                 = getParam("customfieldid_2");
   sensor_correction_String = getParam("customfieldid_3");
-  // topic_sn2                = getParam("customfieldid_4");
+  topic_sn2                = getParam("customfieldid_4");
 
   // =====================
   // mqtt topic
-  topic_sn.toCharArray(data3, 20);
+  topic_sn2.toCharArray(data4, 20);
   
-  SPIFFS_write("/test3.txt", data3);
-  topic_sn = SPIFFS_read_string("/test3.txt");
-  Serial.printf("topic_sn ===========>>> %s \n ", topic_sn);
+  SPIFFS_write("/test4.txt", data4);
+  topic_sn2 = SPIFFS_read_string("/test4.txt");
+  Serial.printf("topic_sn2 ===========>>> %s \n ", topic_sn2);
 
   // =====================
   // mqtt server ip
@@ -249,9 +249,9 @@ void Wifi_Setup() {
   // wm.addParameter(&custom_field_3);
   // wm.setSaveParamsCallback(saveParamCallback);
 
-  // new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(其他)", "", customFieldLength,"placeholder=\"\"");
-  // wm.addParameter(&custom_field_4);
-  // wm.setSaveParamsCallback(saveParamCallback);
+  new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(其他)", "", customFieldLength,"placeholder=\"\"");
+  wm.addParameter(&custom_field_4);
+  wm.setSaveParamsCallback(saveParamCallback);
 
   // std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
   std::vector<const char *> menu = {"wifi","erase"};
@@ -530,10 +530,10 @@ void t2Callback() {
     task_temp();
   }
 
-  // task_co2(topic_sn);
-  // task_co(topic_sn);
-  // task_pm25(topic_sn);
-  task_ch2o(topic_sn);
+  // task_co2(topic_sn2);
+  // task_co(topic_sn2);
+  // task_pm25(topic_sn2);
+  task_ch2o(topic_sn2);
   
   Serial.println("t2 ======================");
 }
