@@ -4,7 +4,6 @@
 // ==============================================
 // Define Sensor Initial
 // ==============================================
-
 // per 1s update sensor data
 void sensor_auto_update()
 {

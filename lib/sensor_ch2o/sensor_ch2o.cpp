@@ -75,6 +75,8 @@ void task_ch2o(String topic_sn) {
 
   connect_mqttServer();
 
+  sensor_init();
+
   char ary_topic_1[20] = "";
   String str_topic_1 = "cvilux/CH2O-";
 

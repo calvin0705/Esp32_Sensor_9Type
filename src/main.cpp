@@ -257,7 +257,7 @@ void Wifi_Setup() {
   // wm.addParameter(&custom_field_3);
   // wm.setSaveParamsCallback(saveParamCallback);
 
-  new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(其他)", "", customFieldLength,"placeholder=\"\"");
+  new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(co2，co，ch2o)", "", customFieldLength,"placeholder=\"\"");
   wm.addParameter(&custom_field_4);
   wm.setSaveParamsCallback(saveParamCallback);
 
@@ -333,6 +333,7 @@ void AHT20_Setup() {
 
 void read_sensor_sn() {
   topic_sn = SPIFFS_read_string("/test3.txt");
+  topic_sn2 = SPIFFS_read_string("/test4.txt");
 }
 
 void client_publish(const char *topic, const char *payload){
@@ -550,8 +551,8 @@ void t2Callback() {
 
   // task_co2(topic_sn2);
   // task_co(topic_sn2);
-  task_pm25(topic_sn2);
-  // task_ch2o(topic_sn2);
+  // task_pm25(topic_sn2);
+  task_ch2o(topic_sn2);
   
   Serial.println("t2 ======================");
 }
@@ -598,6 +599,8 @@ void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
 
+  sensor_init();
+  delay(500);
   sensor_init();
   
   task_setup(); // Run Task

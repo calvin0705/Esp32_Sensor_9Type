@@ -11,9 +11,24 @@ String str_data_point;
 float float_data_point;
 String str_topic_sn;
 
+// void SPIFFS_begin(){
+//   if (SPIFFS.begin(true)){
+//     Serial.println("SPIFFS file system create successful");
+//   }
+// }
+
 void SPIFFS_begin(){
-  if (SPIFFS.begin(true)){
+  if (SPIFFS.begin(true))
+  {
     Serial.println("SPIFFS file system create successful");
+    delay(1000);
+  }
+  else
+  {
+    Serial.println("SPIFFS file system create FAILED ~~~~~~~~~~~~~~~~~~~~~~~ SPIFFS FAILED");
+    Serial.println("SPIFFS file system create FAILED ~~~~~~~~~~~~~~~~~~~~~~~ SPIFFS FAILED");
+    SPIFFS_begin();
+    delay(1000);
   }
 }
 
