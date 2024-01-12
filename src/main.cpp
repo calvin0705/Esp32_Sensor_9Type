@@ -206,6 +206,14 @@ void saveParamCallback(){
 
   // =====================
   // mqtt topic
+  topic_sn.toCharArray(data3, 20);
+  
+  SPIFFS_write("/test3.txt", data3);
+  topic_sn = SPIFFS_read_string("/test3.txt");
+  Serial.printf("topic_sn ===========>>> %s \n ", topic_sn);
+
+  // =====================
+  // mqtt topic
   topic_sn2.toCharArray(data4, 20);
   
   SPIFFS_write("/test4.txt", data4);
@@ -218,11 +226,11 @@ void saveParamCallback(){
   Serial.printf("mqtt_server ===>>>> %s \n", mqtt_server);
   if(String_mqtt.indexOf('.') != -1){
       Serial.println("flashErase / flashWrite");
-      delay(100);
+      delay(10);
       flashErase();
-      delay(100);
+      delay(10);
       flashWrite(mqtt_server, 0);
-      delay(100);
+      delay(10);
       First_set_mqtt = false;
   }
 
@@ -542,8 +550,8 @@ void t2Callback() {
 
   // task_co2(topic_sn2);
   // task_co(topic_sn2);
-  // task_pm25(topic_sn2);
-  task_ch2o(topic_sn2);
+  task_pm25(topic_sn2);
+  // task_ch2o(topic_sn2);
   
   Serial.println("t2 ======================");
 }
