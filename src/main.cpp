@@ -164,7 +164,7 @@ void checkButton(){
     delay(50);
     if( digitalRead(TRIGGER_PIN) == LOW ){
       Serial.println("Button Pressed");
-      delay(50);
+      // delay(50);
 
       Serial.println("Starting config portal");
       wm.setConfigPortalTimeout(120);
