@@ -10,3 +10,5 @@ void sensor_init();
 void read_sensor();
 void clear_uart_buffer();
 void check_sensor_type();
+void QA_mode();
+void Active_mode();

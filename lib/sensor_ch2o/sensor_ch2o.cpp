@@ -75,7 +75,7 @@ void task_ch2o(String topic_sn) {
 
   connect_mqttServer();
 
-  sensor_init();
+  // sensor_init();
 
   char ary_topic_1[20] = "";
   String str_topic_1 = "cvilux/CH2O-";
@@ -89,7 +89,7 @@ void task_ch2o(String topic_sn) {
   str_topic_1.toCharArray(ary_topic_1, 20);
   
   sprintf(str_a, "%f",f_ppm);
-  Serial.printf("str_a 123==========>> %s\n", str_a);
+  // Serial.printf("str_a 123==========>> %s\n", str_a);
   
   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
 

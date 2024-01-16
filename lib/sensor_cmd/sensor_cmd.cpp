@@ -52,11 +52,37 @@ void clear_uart_buffer()
 
   for(i=0;i<5;i++)
   {
-    SEN.setTimeout(500);
+    SEN.setTimeout(100);
     read_sensor();
     incoming  = SEN.readString();
 
-    Serial.printf("clear_uart_buffer i ================>> %d \n", i);
+    // Serial.printf("clear_uart_buffer i ================>> %d \n", i);
+  }
+}
+
+void QA_mode()
+{
+  int i = 0;
+
+  clear_uart_buffer();
+
+  for(i=0;i<20;i++)
+  {
+    sensor_init();
+    delay(100);
+  }
+}
+
+void Active_mode()
+{
+  int i = 0;
+
+  clear_uart_buffer();
+
+  for(i=0;i<20;i++)
+  {
+    sensor_auto_update();
+    delay(100);
   }
 }
 
@@ -68,25 +94,36 @@ void check_sensor_type()
   int sen_type=0;
   char str_a[100];
   String incoming = "";
-
-  clear_uart_buffer();
-  sensor_auto_update();
-  clear_uart_buffer();
-  sensor_auto_update();
-  
+  Serial.println("check_sensor_type ---------------------1111111111111111111111111111");
+  Active_mode();
   read_sensor();
   incoming  = SEN.readString();
   sen_type = incoming[1];
+
+  for(byte i=0; i<incoming.length(); i++)
+  {
+  Serial.print(incoming[i],HEX);
+  Serial.write(' ');
+  }
+  Serial.println();
+
+  ppm1 = incoming[2];
+  ppm2 = incoming[3];
+  ppm = ppm1*256+ppm2;
+
+  Serial.printf("check_sensor_type ppm ================================>> %d \n", ppm);
+
   if(sen_type == 23)
   {
-    Serial.println("Sensor is CH2O ---------------------------!!!");
+    Serial.println("Sensor is CH2O ----------------------2222222222222222222222222222222");
+  }
+  else
+  {
+    Serial.println("Turn to QA_mode ----------------------33333333333333333333333");
   }
 
-  clear_uart_buffer();
-  sensor_init();
-  sensor_init();
-  clear_uart_buffer();
-
+  // clear_uart_buffer();
+  QA_mode();
   read_sensor();
   incoming  = SEN.readString();
 
