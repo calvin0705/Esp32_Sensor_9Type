@@ -599,9 +599,7 @@ void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
 
-  sensor_init();
-  delay(500);
-  sensor_init();
+  QA_mode();
   
   task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd
