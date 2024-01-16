@@ -549,10 +549,10 @@ void t2Callback() {
     task_temp();
   }
 
-  task_co2(topic_sn);
+  // task_co2(topic_sn);
   // task_co(topic_sn);
   // task_pm25(topic_sn);
-  // task_ch2o(topic_sn);
+  task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
