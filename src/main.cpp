@@ -197,12 +197,12 @@ void saveParamCallback(){
   Serial.println("PARAM customfieldid_1 = " + getParam("customfieldid_1")); // mqtt server ip
   Serial.println("PARAM customfieldid_2 = " + getParam("customfieldid_2")); // mqtt topic
   // Serial.println("PARAM customfieldid_3 = " + getParam("customfieldid_3")); // sensor correction
-  // Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // mqtt topic
+  Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // mqtt topic
 
   String_mqtt              = getParam("customfieldid_1");
   topic_sn                 = getParam("customfieldid_2");
   // sensor_correction_String = getParam("customfieldid_3");
-  // topic_sn2                = getParam("customfieldid_4");
+  topic_sn2                = getParam("customfieldid_4");
 
   // =====================
   // mqtt topic
@@ -214,11 +214,11 @@ void saveParamCallback(){
 
   // =====================
   // mqtt topic
-  // topic_sn2.toCharArray(data4, 20);
+  topic_sn2.toCharArray(data4, 20);
   
-  // SPIFFS_write("/test4.txt", data4);
-  // topic_sn2 = SPIFFS_read_string("/test4.txt");
-  // Serial.printf("topic_sn2 ===========>>> %s \n ", topic_sn2);
+  SPIFFS_write("/test4.txt", data4);
+  topic_sn2 = SPIFFS_read_string("/test4.txt");
+  Serial.printf("topic_sn2 ===========>>> %s \n ", topic_sn2);
 
   // =====================
   // mqtt server ip
@@ -249,7 +249,7 @@ void Wifi_Setup() {
   wm.addParameter(&custom_field_1);
   wm.setSaveParamsCallback(saveParamCallback);
 
-  new (&custom_field_2) WiFiManagerParameter("customfieldid_2", "Number of Sensor", "", customFieldLength,"placeholder=\"\"");
+  new (&custom_field_4) WiFiManagerParameter("customfieldid_2", "第幾顆(Number of Sensor)", "", customFieldLength,"placeholder=\"\"");
   wm.addParameter(&custom_field_2);
   wm.setSaveParamsCallback(saveParamCallback);
 
@@ -257,9 +257,9 @@ void Wifi_Setup() {
   // wm.addParameter(&custom_field_3);
   // wm.setSaveParamsCallback(saveParamCallback);
 
-  // new (&custom_field_4) WiFiManagerParameter("customfieldid_4", "Number of Sensor(co2，co，ch2o)", "", customFieldLength,"placeholder=\"\"");
-  // wm.addParameter(&custom_field_4);
-  // wm.setSaveParamsCallback(saveParamCallback);
+  new (&custom_field_2) WiFiManagerParameter("customfieldid_4", "序列號(Sensor Type)", "", customFieldLength,"placeholder=\"\"");
+  wm.addParameter(&custom_field_4);
+  wm.setSaveParamsCallback(saveParamCallback);
 
   // std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
   std::vector<const char *> menu = {"wifi","erase"};
@@ -333,7 +333,7 @@ void AHT20_Setup() {
 
 void read_sensor_sn() {
   topic_sn = SPIFFS_read_string("/test3.txt");
-  // topic_sn2 = SPIFFS_read_string("/test4.txt");
+  topic_sn2 = SPIFFS_read_string("/test4.txt");
 }
 
 void client_publish(const char *topic, const char *payload){
@@ -371,7 +371,7 @@ void client_conn(){
 }
 
 void task_temp() {
-  Serial.println(" task_temp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  // Serial.println(" task_temp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   // Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
 
   int sensor_correction_int = 0;
@@ -389,7 +389,7 @@ void task_temp() {
 
   sensor_correction_Float  = SPIFFS_read_float("/test1.txt");
   sensor_correction_Float2 = SPIFFS_read_float("/test2.txt");
-  delay(10);
+  delay(1);
 
   // ==================================================
   if (!client.connected()) 
@@ -549,10 +549,10 @@ void t2Callback() {
     task_temp();
   }
 
-  // task_co2(topic_sn);
+  task_co2(topic_sn);
   // task_co(topic_sn);
   // task_pm25(topic_sn);
-  task_ch2o(topic_sn);
+  // task_ch2o(topic_sn);
   
   Serial.println("t2 ======================");
 }
