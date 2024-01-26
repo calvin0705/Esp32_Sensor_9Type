@@ -72,7 +72,7 @@ float* pm25_data_transfer()
 // ==============================================
 // Define Setup Function
 // ==============================================
-void task_pm25(String topic_sn) {
+void task_pm25(String topic_sn, String topic_sn2) {
   String str_ppm;
   float* f_ppm={0};
 
@@ -94,18 +94,28 @@ void task_pm25(String topic_sn) {
   Serial.printf("f_ppm +2 ============>> %f\n", *(f_ppm+2));
 
   char ary_topic_1[20] = "";
-  String str_topic_1 = "cvilux/PM1_0-";
   char ary_topic_2[20] = "";
-  String str_topic_2 = "cvilux/PM2_5-";
   char ary_topic_3[20] = "";
-  String str_topic_3 = "cvilux/PM10-";
 
-  str_topic_1 = str_topic_1 + topic_sn;
-  str_topic_1.toCharArray(ary_topic_1, 20);
-  str_topic_2 = str_topic_2 + topic_sn;
-  str_topic_2.toCharArray(ary_topic_2, 20);
-  str_topic_3 = str_topic_3 + topic_sn;
-  str_topic_3.toCharArray(ary_topic_3, 20);
+  String str_topic_0 = "cvilux/";
+  String str_topic_1 = "/pm1_0/";
+  String str_topic_2 = "/pm2_5/";
+  String str_topic_3 = "/pm10/";
+
+  str_topic_0 = str_topic_0 + topic_sn2;
+  str_topic_0 = str_topic_0 + str_topic_1;
+  str_topic_0 = str_topic_0 + topic_sn;
+  str_topic_0.toCharArray(ary_topic_1, 20);
+
+  str_topic_0 = str_topic_0 + topic_sn2;
+  str_topic_0 = str_topic_0 + str_topic_2;
+  str_topic_0 = str_topic_0 + topic_sn;
+  str_topic_0.toCharArray(ary_topic_2, 20);
+
+  str_topic_0 = str_topic_0 + topic_sn2;
+  str_topic_0 = str_topic_0 + str_topic_3;
+  str_topic_0 = str_topic_0 + topic_sn;
+  str_topic_0.toCharArray(ary_topic_3, 20);
 
   sprintf(str_a, "%f",*(f_ppm));
   sprintf(str_b, "%f",*(f_ppm+1));
