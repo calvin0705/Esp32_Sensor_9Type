@@ -58,25 +58,29 @@ String sensor_data_transfer()
 // ==============================================
 // Define Setup Function
 // ==============================================
-void task_co2(String topic_sn) {
+void task_co2(String topic_sn, String topic_sn2) {
   String str_ppm;
   char str_a[100];
 
   connect_mqttServer();
 
   char ary_topic_1[20] = "";
-  String str_topic_1 = "cvilux/CO2-";
 
   str_ppm = sensor_data_transfer();
   
 
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
-
-  str_topic_1 = str_topic_1 + topic_sn;
-  str_topic_1.toCharArray(ary_topic_1, 20);
   
   sprintf(str_a, "%s",str_ppm);
   Serial.printf("str_a ==========>> %s\n", str_a);
+
+  String str_topic_1 = "cvilux/";
+  String str_topic_3 = "/co2/";
+
+  str_topic_1 = str_topic_1 + topic_sn2;
+  str_topic_1 = str_topic_1 + str_topic_3;
+  str_topic_1 = str_topic_1 + topic_sn;
+  str_topic_1.toCharArray(ary_topic_1, 20);
   
   Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
 

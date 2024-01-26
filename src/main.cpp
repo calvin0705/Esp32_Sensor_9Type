@@ -425,12 +425,18 @@ void task_temp() {
   char ary_topic_1[20] = "";
   char ary_topic_2[20] = "";
 
-  String str_topic_1 = "cvilux/temp-";
-  String str_topic_2 = "cvilux/humi-";
+  String str_topic_1 = "cvilux/";
+  String str_topic_2 = "cvilux/";
+  String str_topic_3 = "/temp/";
+  String str_topic_4 = "/humi/";
 
+  str_topic_1 = str_topic_1 + topic_sn2;
+  str_topic_1 = str_topic_1 + str_topic_3;
   str_topic_1 = str_topic_1 + topic_sn;
   str_topic_1.toCharArray(ary_topic_1, 20);
 
+  str_topic_2 = str_topic_2 + topic_sn2;
+  str_topic_2 = str_topic_2 + str_topic_4;
   str_topic_2 = str_topic_2 + topic_sn;
   str_topic_2.toCharArray(ary_topic_2, 20);
 
@@ -549,7 +555,7 @@ void t2Callback() {
     task_temp();
   }
 
-  task_co2(topic_sn);
+  task_co2(topic_sn, topic_sn2);
   // task_co(topic_sn);
   // task_pm25(topic_sn);
   // task_ch2o(topic_sn);
