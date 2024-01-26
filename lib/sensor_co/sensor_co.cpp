@@ -68,7 +68,7 @@ float co_data_transfer()
 // ==============================================
 // Define Setup Function
 // ==============================================
-void task_co(String topic_sn) {
+void task_co(String topic_sn, String topic_sn2) {
   String str_ppm;
   char str_a[100];
   float f_ppm=0;
@@ -76,18 +76,22 @@ void task_co(String topic_sn) {
   connect_mqttServer();
 
   char ary_topic_1[20] = "";
-  String str_topic_1 = "cvilux/CO-";
 
   f_ppm = co_data_transfer();
   Serial.printf("f_ppm ============>> %f\n", f_ppm);
 
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
-
-  str_topic_1 = str_topic_1 + topic_sn;
-  str_topic_1.toCharArray(ary_topic_1, 20);
   
   sprintf(str_a, "%f",f_ppm);
   Serial.printf("str_a 123==========>> %s\n", str_a);
+
+  String str_topic_1 = "cvilux/";
+  String str_topic_3 = "/co/";
+
+  str_topic_1 = str_topic_1 + topic_sn2;
+  str_topic_1 = str_topic_1 + str_topic_3;
+  str_topic_1 = str_topic_1 + topic_sn;
+  str_topic_1.toCharArray(ary_topic_1, 20);
   
   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
 

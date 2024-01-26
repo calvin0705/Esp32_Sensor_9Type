@@ -96,6 +96,9 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   
   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
 
+  sprintf(str_a, "%s",str_ppm);
+  Serial.printf("str_a ==========>> %s\n", str_a);
+
   if(f_ppm <= 0)
   {
     Serial.println("No Sensor !!!");
