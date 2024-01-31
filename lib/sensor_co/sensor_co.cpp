@@ -39,12 +39,12 @@ float co_data_transfer()
     incoming  = SEN.readString();
   }
 
-  for(byte i=0; i<incoming.length(); i++)
-  {
-  Serial.print(incoming[i],HEX);
-  Serial.write(' ');
-  }
-  Serial.println();
+  // for(byte i=0; i<incoming.length(); i++)
+  // {
+  // Serial.print(incoming[i],HEX);
+  // Serial.write(' ');
+  // }
+  // Serial.println();
   
   ppm1 = incoming[2];
   ppm2 = incoming[3];
@@ -53,7 +53,7 @@ float co_data_transfer()
 //   Serial.printf("f_ppm ============>> %f\n", f_ppm);
   str_ppm = String(ppm);
 
-  delay(1000);
+  // delay(1000);
 
   Serial.print("Read Sensor(ppm) : ");
   Serial.println(ppm);

@@ -178,7 +178,7 @@ void checkButton(){
       }
     }
   }
-  delay(1000);
+  // delay(1000);
 }
 
 String getParam(String name){
@@ -302,7 +302,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 }
 
 void connect_mqttServer() {
-  delay(1000);
+  // delay(1000);
 
   if (!client.connected()) {
     client_conn();
@@ -352,7 +352,6 @@ void client_conn(){
 
   client_mac= str_client_mac.c_str();
 
-  Serial.println("!!! 12345 ========================================================  !!! 12345 ");
   Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
   // if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
   if (client.connect(client_mac)) {
@@ -371,9 +370,6 @@ void client_conn(){
 }
 
 void task_temp() {
-  // Serial.println(" task_temp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  // Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
-
   int sensor_correction_int = 0;
 
   if(flag_html_write == true){
@@ -555,10 +551,10 @@ void t2Callback() {
     task_temp();
   }
 
-  task_co2(topic_sn, topic_sn2);
-  // task_co(topic_sn);
-  // task_pm25(topic_sn);
-  // task_ch2o(topic_sn);
+  // task_co2(topic_sn, topic_sn2);
+  // task_co(topic_sn, topic_sn2);
+  task_pm25(topic_sn, topic_sn2);
+  // task_ch2o(topic_sn, topic_sn2);
   
   Serial.println("t2 ======================");
 }
@@ -574,14 +570,14 @@ void t3Callback() {
 }
 
 void t4Callback() {
-
-  Serial.println("t4 ======================");
+  checkButton();
+  // Serial.println("t4 ======================");
 }
 
 Task t1(1000, TASK_FOREVER, &t1Callback);
-Task t2(2000, TASK_FOREVER, &t2Callback);
+Task t2(10, TASK_FOREVER, &t2Callback);
 Task t3(5000, TASK_FOREVER, &t3Callback);
-Task t4(1000, TASK_FOREVER, &t4Callback);
+Task t4(100, TASK_FOREVER, &t4Callback);
 
 void task_setup() {
   runner.init();
@@ -593,7 +589,7 @@ void task_setup() {
   t1.enable();
   t2.enable();
   // t3.enable();
-  // t4.enable();
+  t4.enable();
 }
 // Task Function END of Line
 // ==================================================
@@ -604,25 +600,22 @@ void task_setup() {
 void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
-
   QA_mode();
-  
-  task_setup(); // Run Task
   Wifi_Setup(); // Wifi html keyin id/pwd
   AHT20_Setup();
   setup_isr();
-  
   read_sensor_sn();
   serial_monitor();
 
-  // check_sensor_type();
+  // delay(60000); // Delay for sensor initaliz time
+  task_setup(); // Run Task
 }
 
 // ==================================================
 // System Main Loop
 // ==================================================
 void loop () {
-  checkButton();
+  // checkButton();
   runner.execute();
-  delay(1000);
+  // delay(50);
 }

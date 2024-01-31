@@ -39,12 +39,12 @@ float* pm25_data_transfer()
     incoming  = SEN.readString();
   }
 
-  for(byte i=0; i<incoming.length(); i++)
-  {
-  Serial.print(incoming[i],HEX);
-  Serial.write(' ');
-  }
-  Serial.println();
+  // for(byte i=0; i<incoming.length(); i++)
+  // {
+  // Serial.print(incoming[i],HEX);
+  // Serial.write(' ');
+  // }
+  // Serial.println();
   
   ppm1 = incoming[2];
   ppm2 = incoming[3];
@@ -58,7 +58,7 @@ float* pm25_data_transfer()
   ppm2 = incoming[7];
   f_ppm[2] = (ppm1*256+ppm2);
 
-  delay(1000);
+  // delay(1000);
 
   if(f_ppm[0] == 0)
   {
@@ -101,25 +101,31 @@ void task_pm25(String topic_sn, String topic_sn2) {
   String str_topic_1 = "/pm1_0/";
   String str_topic_2 = "/pm2_5/";
   String str_topic_3 = "/pm10/";
+  String str_combin = "";
+  // cvilux/9/pm1_0/1
 
-  str_topic_0 = str_topic_0 + topic_sn2;
-  str_topic_0 = str_topic_0 + str_topic_1;
-  str_topic_0 = str_topic_0 + topic_sn;
-  str_topic_0.toCharArray(ary_topic_1, 20);
+  str_combin = str_topic_0 + topic_sn2;
+  str_combin = str_combin + str_topic_1;
+  str_combin = str_combin + topic_sn;
+  str_combin.toCharArray(ary_topic_1, 30);
 
-  str_topic_0 = str_topic_0 + topic_sn2;
-  str_topic_0 = str_topic_0 + str_topic_2;
-  str_topic_0 = str_topic_0 + topic_sn;
-  str_topic_0.toCharArray(ary_topic_2, 20);
+  str_combin = str_topic_0 + topic_sn2;
+  str_combin = str_combin + str_topic_2;
+  str_combin = str_combin + topic_sn;
+  str_combin.toCharArray(ary_topic_2, 30);
 
-  str_topic_0 = str_topic_0 + topic_sn2;
-  str_topic_0 = str_topic_0 + str_topic_3;
-  str_topic_0 = str_topic_0 + topic_sn;
-  str_topic_0.toCharArray(ary_topic_3, 20);
+  str_combin = str_topic_0 + topic_sn2;
+  str_combin = str_combin + str_topic_3;
+  str_combin = str_combin + topic_sn;
+  str_combin.toCharArray(ary_topic_3, 30);
 
   sprintf(str_a, "%f",*(f_ppm));
   sprintf(str_b, "%f",*(f_ppm+1));
   sprintf(str_c, "%f",*(f_ppm+2));
+
+  Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
+  Serial.println("ary_topic_2 ========>> : " + String(ary_topic_2));
+  Serial.println("ary_topic_3 ========>> : " + String(ary_topic_3));
 
   if(*(f_ppm) <= 0)
   {

@@ -31,19 +31,19 @@ String sensor_data_transfer()
 
   incoming  = SEN.readString();
 
-  for(byte i=0; i<incoming.length(); i++)
-  {
-  Serial.print(incoming[i],HEX);
-  Serial.write(' ');
-  }
-  Serial.println();
+  // for(byte i=0; i<incoming.length(); i++)
+  // {
+  // Serial.print(incoming[i],HEX);
+  // Serial.write(' ');
+  // }
+  // Serial.println();
   
   ppm1 = incoming[2];
   ppm2 = incoming[3];
   ppm = ppm1*256+ppm2;
   str_ppm = String(ppm);
 
-  delay(1000);
+  // delay(1000);
 
   Serial.print("Read Sensor(ppm) : ");
   Serial.println(ppm);
@@ -67,7 +67,6 @@ void task_co2(String topic_sn, String topic_sn2) {
   char ary_topic_1[20] = "";
 
   str_ppm = sensor_data_transfer();
-  
 
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
   

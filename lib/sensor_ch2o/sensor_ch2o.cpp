@@ -39,12 +39,12 @@ float ch2o_data_transfer()
     incoming  = SEN.readString();
   }
 
-  for(byte i=0; i<incoming.length(); i++)
-  {
-  Serial.print(incoming[i],HEX);
-  Serial.write(' ');
-  }
-  Serial.println();
+  // for(byte i=0; i<incoming.length(); i++)
+  // {
+  // Serial.print(incoming[i],HEX);
+  // Serial.write(' ');
+  // }
+  // Serial.println();
   
   ppm1 = incoming[2];
   ppm2 = incoming[3];
@@ -53,7 +53,7 @@ float ch2o_data_transfer()
 //   Serial.printf("f_ppm ============>> %f\n", f_ppm);
 //   str_ppm = String(ppm);
 
-  delay(1000);
+  // delay(1000);
 
 //   Serial.print("Read Sensor(ppm) : ");
 //   Serial.println(ppm);
@@ -87,7 +87,7 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   // Serial.printf("str_a 123==========>> %s\n", str_a);
 
   String str_topic_1 = "cvilux/";
-  String str_topic_3 = "/co2/";
+  String str_topic_3 = "/ch2o/";
 
   str_topic_1 = str_topic_1 + topic_sn2;
   str_topic_1 = str_topic_1 + str_topic_3;
