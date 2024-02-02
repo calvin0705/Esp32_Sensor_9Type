@@ -72,7 +72,7 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   String str_ppm;
   char str_a[100];
   float f_ppm=0;
-
+  
   connect_mqttServer();
 
   // sensor_init();
@@ -80,7 +80,7 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   char ary_topic_1[20] = "";
 
   f_ppm = ch2o_data_transfer();
-  Serial.printf("f_ppm ============>> %f\n", f_ppm);
+    Serial.printf("f_ppm ============>> %f\n", f_ppm);
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
   
   sprintf(str_a, "%f",f_ppm);
@@ -95,8 +95,6 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   str_topic_1.toCharArray(ary_topic_1, 20);
   
   Serial.println("ary_topic_1 123========>> : " + String(ary_topic_1));
-
-  sprintf(str_a, "%s",str_ppm);
   Serial.printf("str_a ==========>> %s\n", str_a);
 
   if(f_ppm <= 0)
