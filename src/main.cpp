@@ -546,15 +546,15 @@ void t1Callback() {
 
 void t2Callback() {
   // check_sensor_type();
-
+  checkButton();
   if(is_AHT == true){
     task_temp();
   }
 
-  // task_co2(topic_sn, topic_sn2);
+  task_co2(topic_sn, topic_sn2);
   // task_co(topic_sn, topic_sn2);
   // task_pm25(topic_sn, topic_sn2);
-  task_ch2o(topic_sn, topic_sn2);
+  // task_ch2o(topic_sn, topic_sn2)
   
   Serial.println("t2 ======================");
 }
