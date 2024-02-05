@@ -35,6 +35,8 @@ void connect_mqttServer();
 // ==================================================
 String String_mqtt;
 bool First_set_mqtt = true;
+bool is_count_30s = false;
+int count_30 = 0;
 
 const int len = 64;    // flashWrite, flashRead -> i = 0 to 63
 const uint32_t addressStart = 0x3FA000; 
@@ -551,10 +553,14 @@ void t2Callback() {
     task_temp();
   }
 
-  task_co2(topic_sn, topic_sn2);
+  if(is_count_30s == true)
+  {
+    Serial.println("t2 30s yes ======================================================~~~~!!!");
+    task_co2(topic_sn, topic_sn2);
   // task_co(topic_sn, topic_sn2);
   // task_pm25(topic_sn, topic_sn2);
   // task_ch2o(topic_sn, topic_sn2)
+  }
   
   Serial.println("t2 ======================");
 }
@@ -574,10 +580,23 @@ void t4Callback() {
   // Serial.println("t4 ======================");
 }
 
+void t5Callback() {
+  count_30 = count_30 + 1;
+
+  if (count_30 > 30)
+  {
+    Serial.println("t5 count_30 > 30====================== count_30 > 30 ");
+    is_count_30s = true;
+  }
+
+  Serial.println("t5 ======================");
+}
+
 Task t1(1000, TASK_FOREVER, &t1Callback);
-Task t2(10, TASK_FOREVER, &t2Callback);
+Task t2(1000, TASK_FOREVER, &t2Callback);
 Task t3(5000, TASK_FOREVER, &t3Callback);
 Task t4(100, TASK_FOREVER, &t4Callback);
+Task t5(1000, TASK_FOREVER, &t5Callback);
 
 void task_setup() {
   runner.init();
@@ -585,11 +604,13 @@ void task_setup() {
   runner.addTask(t2);
   runner.addTask(t3);
   runner.addTask(t4);
+  runner.addTask(t5);
 
   t1.enable();
   t2.enable();
   // t3.enable();
   t4.enable();
+  t5.enable();
 }
 // Task Function END of Line
 // ==================================================
