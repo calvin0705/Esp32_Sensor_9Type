@@ -80,7 +80,7 @@ void task_ch2o(String topic_sn, String topic_sn2) {
   char ary_topic_1[20] = "";
 
   f_ppm = ch2o_data_transfer();
-    Serial.printf("f_ppm ============>> %f\n", f_ppm);
+  Serial.printf("f_ppm ============>> %f\n", f_ppm);
   Serial.printf("topic_sn ==>> %s\n", topic_sn);
   
   sprintf(str_a, "%f",f_ppm);
