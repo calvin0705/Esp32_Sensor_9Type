@@ -566,12 +566,16 @@ void t2Callback() {
 }
 
 void t3Callback() {
-  int result = 0;
+  // int result = 0;
+  // result = myFunction(5, 8);
+  // delay(2000);
+  // Serial.printf("myFunction ==>> %d \n", result);
 
-  result = myFunction(5, 8);
+  digitalWrite(26, HIGH);       // sets the digital pin 13 on
+  delay(1000);                  // waits for a second
+  digitalWrite(26, LOW);        // sets the digital pin 13 off
+  delay(1000);
 
-  delay(2000);
-  Serial.printf("myFunction ==>> %d \n", result);
   Serial.println("t3 ======================");
 }
 
@@ -583,7 +587,7 @@ void t4Callback() {
 void t5Callback() {
   count_30 = count_30 + 1;
 
-  if (count_30 > 30)
+  if (count_30 > 60)
   {
     Serial.println("t5 count_30 > 30====================== count_30 > 30 ");
     is_count_30s = true;
@@ -594,7 +598,7 @@ void t5Callback() {
 
 Task t1(1000, TASK_FOREVER, &t1Callback);
 Task t2(1000, TASK_FOREVER, &t2Callback);
-Task t3(5000, TASK_FOREVER, &t3Callback);
+Task t3(50, TASK_FOREVER, &t3Callback);
 Task t4(100, TASK_FOREVER, &t4Callback);
 Task t5(1000, TASK_FOREVER, &t5Callback);
 
@@ -608,7 +612,7 @@ void task_setup() {
 
   t1.enable();
   t2.enable();
-  // t3.enable();
+  t3.enable();
   t4.enable();
   t5.enable();
 }
@@ -627,6 +631,7 @@ void setup () {
   setup_isr();
   read_sensor_sn();
   serial_monitor();
+  pinMode(26, OUTPUT);
 
   // delay(60000); // Delay for sensor initaliz time
   task_setup(); // Run Task

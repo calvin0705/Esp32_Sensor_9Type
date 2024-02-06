@@ -1,0 +1,6 @@
+https://mqtt.cvicloud-srv.net/dashboard
+
+帳號：
+cvicloud-en0711
+密碼：
+123456
