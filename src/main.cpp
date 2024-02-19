@@ -104,7 +104,7 @@ void serial_monitor()
 // Wifi html keyin id/pwd
 // ==================================================
 const char* ssid = "Aoe";
-const char* password = "00000000";
+const char* password = "55555555";
 
 int wifi_status;
 
@@ -199,12 +199,12 @@ void saveParamCallback(){
   Serial.println("PARAM customfieldid_1 = " + getParam("customfieldid_1")); // mqtt server ip
   Serial.println("PARAM customfieldid_2 = " + getParam("customfieldid_2")); // mqtt topic
   // Serial.println("PARAM customfieldid_3 = " + getParam("customfieldid_3")); // sensor correction
-  Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // mqtt topic
+  // Serial.println("PARAM customfieldid_4 = " + getParam("customfieldid_4")); // mqtt topic
 
   String_mqtt              = getParam("customfieldid_1");
   topic_sn                 = getParam("customfieldid_2");
   // sensor_correction_String = getParam("customfieldid_3");
-  topic_sn2                = getParam("customfieldid_4");
+  // topic_sn2                = getParam("customfieldid_4");
 
   // =====================
   // mqtt topic
@@ -216,11 +216,11 @@ void saveParamCallback(){
 
   // =====================
   // mqtt topic
-  topic_sn2.toCharArray(data4, 20);
+  // topic_sn2.toCharArray(data4, 20);
   
-  SPIFFS_write("/test4.txt", data4);
-  topic_sn2 = SPIFFS_read_string("/test4.txt");
-  Serial.printf("topic_sn2 ===========>>> %s \n ", topic_sn2);
+  // SPIFFS_write("/test4.txt", data4);
+  // topic_sn2 = SPIFFS_read_string("/test4.txt");
+  // Serial.printf("topic_sn2 ===========>>> %s \n ", topic_sn2);
 
   // =====================
   // mqtt server ip
@@ -251,7 +251,7 @@ void Wifi_Setup() {
   wm.addParameter(&custom_field_1);
   wm.setSaveParamsCallback(saveParamCallback);
 
-  new (&custom_field_4) WiFiManagerParameter("customfieldid_2", "第幾顆(Number of Sensor)", "", customFieldLength,"placeholder=\"\"");
+  new (&custom_field_2) WiFiManagerParameter("customfieldid_2", "第幾顆(Number of Sensor)", "", customFieldLength,"placeholder=\"\"");
   wm.addParameter(&custom_field_2);
   wm.setSaveParamsCallback(saveParamCallback);
 
@@ -259,9 +259,9 @@ void Wifi_Setup() {
   // wm.addParameter(&custom_field_3);
   // wm.setSaveParamsCallback(saveParamCallback);
 
-  new (&custom_field_2) WiFiManagerParameter("customfieldid_4", "序列號(Sensor Type)", "", customFieldLength,"placeholder=\"\"");
-  wm.addParameter(&custom_field_4);
-  wm.setSaveParamsCallback(saveParamCallback);
+  // new (&custom_field_2) WiFiManagerParameter("customfieldid_4", "序列號(Sensor Type)", "", customFieldLength,"placeholder=\"\"");
+  // wm.addParameter(&custom_field_4);
+  // wm.setSaveParamsCallback(saveParamCallback);
 
   // std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
   std::vector<const char *> menu = {"wifi","erase"};
@@ -335,7 +335,7 @@ void AHT20_Setup() {
 
 void read_sensor_sn() {
   topic_sn = SPIFFS_read_string("/test3.txt");
-  topic_sn2 = SPIFFS_read_string("/test4.txt");
+  // topic_sn2 = SPIFFS_read_string("/test4.txt");
 }
 
 void client_publish(const char *topic, const char *payload){
@@ -548,18 +548,86 @@ void t1Callback() {
 
 void t2Callback() {
   // check_sensor_type();
-  checkButton();
-  if(is_AHT == true){
-    task_temp();
-  }
+  // #define sensor_type_sn 1 // SN Define
 
-  if(is_count_30s == true)
-  {
-    Serial.println("t2 30s yes ======================================================~~~~!!!");
-    task_co2(topic_sn, topic_sn2);
+  // checkButton();
+  // if(is_AHT == true){
+  //   task_temp();
+  // }
+
+  // if(is_count_30s == true)
+  // {
+  //   Serial.println("t2 30s yes ======================================================~~~~!!!");
+  //   // task_co2(topic_sn, topic_sn2);
+  // }
   // task_co(topic_sn, topic_sn2);
   // task_pm25(topic_sn, topic_sn2);
-  // task_ch2o(topic_sn, topic_sn2)
+  // task_ch2o(topic_sn, topic_sn2);
+
+  #define sensor_type_sn 8 // Sensor Type SN Define
+
+  switch (sensor_type_sn) {
+    case 1:
+      topic_sn2 = 1;
+      task_temp();
+      break;
+
+    case 2:
+      topic_sn2 = 2;
+      task_co(topic_sn, topic_sn2);
+      break;
+
+    case 3:
+      topic_sn2 = 3;
+      if(is_count_30s == true)
+      {
+        Serial.println("t2 30s yes ======================================================~~~~!!!");
+        task_co2(topic_sn, topic_sn2);
+      }
+      break;
+
+    case 4:
+      topic_sn2 = 4;
+      task_ch2o(topic_sn, topic_sn2);
+      break;
+
+    case 5:
+      topic_sn2 = 5;
+      task_pm25(topic_sn, topic_sn2);
+      break;
+
+    case 6:
+      topic_sn2 = 6;
+      task_temp();
+      task_co(topic_sn, topic_sn2);
+      break;
+
+    case 7:
+      topic_sn2 = 7;
+      task_temp();
+
+      if(is_count_30s == true)
+      {
+        Serial.println("t2 30s yes ======================================================~~~~!!!");
+        task_co2(topic_sn, topic_sn2);
+      }
+      break;
+
+    case 8:
+      topic_sn2 = 8;
+      task_temp();
+      task_ch2o(topic_sn, topic_sn2);
+      break;
+
+    case 9:
+      topic_sn2 = 9;
+      task_temp();
+      task_pm25(topic_sn, topic_sn2);
+      break;
+
+    default:
+      Serial.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      break;
   }
   
   Serial.println("t2 ======================");
@@ -587,9 +655,9 @@ void t4Callback() {
 void t5Callback() {
   count_30 = count_30 + 1;
 
-  if (count_30 > 60)
+  if (count_30 > 15)
   {
-    Serial.println("t5 count_30 > 30====================== count_30 > 30 ");
+    Serial.println("t5 count_30 > 30====================== count_30 > 15 ");
     is_count_30s = true;
   }
 
@@ -626,6 +694,8 @@ void setup () {
   Serial.begin(115200);
   SPIFFS_begin();
   QA_mode();
+
+  // default_wifi();
   Wifi_Setup(); // Wifi html keyin id/pwd
   AHT20_Setup();
   setup_isr();
