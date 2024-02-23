@@ -447,6 +447,88 @@ void task_temp() {
 }
 
 // ==================================================
+// task_temp_fake for develop sensor alarm
+// ==================================================
+void task_temp_fake() {
+  int sensor_correction_int = 0;
+
+  if(flag_html_write == true){
+    sensor_correction_String.toCharArray(data1, 20);
+    sensor_correction_Float = sensor_correction_String.toFloat();
+
+    if(sensor_correction_String != ""){
+      SPIFFS_write("/test1.txt", data1);
+      delay(10);
+      flag_html_write = false;
+    }
+  }
+
+  sensor_correction_Float  = SPIFFS_read_float("/test1.txt");
+  sensor_correction_Float2 = SPIFFS_read_float("/test2.txt");
+  delay(1);
+
+  // ==================================================
+  if (!client.connected()) 
+  {
+    connect_mqttServer();
+  }
+  client.loop();
+
+  // temp sensor read
+  char str_temp_a[100];
+  char str_temp_b[100];
+
+  sensors_event_t humidity, temp;
+  aht.getEvent(&humidity, &temp);
+
+  float temp1 = 0.0;
+  temp1 = temp.temperature;
+  temp1 = temp1 + sensor_correction_Float;
+
+  float humi1 = 0.0;
+  humi1 = humidity.relative_humidity;
+  humi1 = humi1 + sensor_correction_Float2;
+
+  // sprintf(str_temp_a, "%f",temp1);
+  sprintf(str_temp_b, "%f",humi1);
+
+  sprintf(str_temp_a, "over");
+
+  Serial.println(str_temp_a);
+  Serial.println(str_temp_b);
+
+  // read_sensor_sn();
+  Serial.printf("topic_sn ==>> %s\n", topic_sn);
+
+  char ary_topic_1[20] = "";
+  char ary_topic_2[20] = "";
+
+  // String str_topic_1 = "cvilux/";
+  String str_topic_2 = "cvilux/";
+  String str_topic_3 = "/temp/";
+  String str_topic_4 = "/humi/";
+
+  String str_topic_1 = "warn/"; // warn test
+
+  str_topic_1 = str_topic_1 + topic_sn2;
+  str_topic_1 = str_topic_1 + str_topic_3;
+  str_topic_1 = str_topic_1 + topic_sn;
+  str_topic_1.toCharArray(ary_topic_1, 20);
+
+  str_topic_2 = str_topic_2 + topic_sn2;
+  str_topic_2 = str_topic_2 + str_topic_4;
+  str_topic_2 = str_topic_2 + topic_sn;
+  str_topic_2.toCharArray(ary_topic_2, 20);
+
+  Serial.println("ary_topic_1 ========>> : " + String(ary_topic_1));
+  Serial.println("ary_topic_2 ========>> : " + String(ary_topic_2));
+
+  client.publish(ary_topic_1, str_temp_a); //topic name and send value.
+  delay(1); 
+  client.publish(ary_topic_2, str_temp_b); //topic name and send value.
+}
+
+// ==================================================
 // ISR Interrupt
 // ==================================================
 const uint8_t InterruptPin1 = 32;
@@ -564,7 +646,7 @@ void t2Callback() {
   // task_pm25(topic_sn, topic_sn2);
   // task_ch2o(topic_sn, topic_sn2);
 
-  #define sensor_type_sn 8 // Sensor Type SN Define
+  #define sensor_type_sn 18 // Sensor Type SN Define
 
   switch (sensor_type_sn) {
     case 1:
@@ -627,6 +709,9 @@ void t2Callback() {
 
     default:
       Serial.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      topic_sn2 = 9;
+      task_temp_fake();
+      task_co2(topic_sn, topic_sn2);
       break;
   }
   
