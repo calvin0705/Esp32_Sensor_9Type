@@ -30,6 +30,8 @@ void client_publish(const char *topic, const char *payload);
 void client_conn();
 void connect_mqttServer();
 
+bool led_wifi_status = true;
+
 // ==================================================
 // Flash Read / Write
 // ==================================================
@@ -156,7 +158,7 @@ char mqtt_server[40];
 char sensor_correction[10];
 char sensor_correction2[10];
 
-unsigned int  timeout   = 120;
+unsigned int  timeout   = 180;
 unsigned int  startTime = millis();
 bool portalRunning      = false;
 bool startAP = true;
@@ -171,11 +173,13 @@ void checkButton(){
       Serial.println("Starting config portal");
       wm.setConfigPortalTimeout(120);
       
+      led_wifi_status = true;
       if (!wm.startConfigPortal(AP_SSID_2,"00000000")) {
         Serial.println("failed to connect or hit timeout");
         delay(500);
         // ESP.restart();
       } else {
+        led_wifi_status = false;
         Serial.println("connected...yeey :)");
       }
     }
@@ -271,6 +275,8 @@ void Wifi_Setup() {
   wm.setConnectTimeout(10);
 
   bool res;
+  
+  led_wifi_status = true;
   res = wm.autoConnect(AP_SSID_1,"00000000");
 
   if(!res) {
@@ -278,6 +284,7 @@ void Wifi_Setup() {
     // ESP.restart();
   } 
   else {
+    led_wifi_status = false;
     Serial.println("connected...yeey :)");
   }
 }
@@ -624,6 +631,7 @@ void task_isr() {
 // ==================================================
 // Scheduler runner;
 void t1Callback() { 
+  Wifi_Setup();
   task_isr();
   // Serial.println("t1 ======================");
 }
@@ -646,7 +654,7 @@ void t2Callback() {
   // task_pm25(topic_sn, topic_sn2);
   // task_ch2o(topic_sn, topic_sn2);
 
-  #define sensor_type_sn 18 // Sensor Type SN Define
+  #define sensor_type_sn 7 // Sensor Type SN Define
 
   switch (sensor_type_sn) {
     case 1:
@@ -749,11 +757,16 @@ void t5Callback() {
   Serial.println("t5 ======================");
 }
 
+void t6Callback() {
+  // Wifi_Setup();
+}
+
 Task t1(1000, TASK_FOREVER, &t1Callback);
-Task t2(1000, TASK_FOREVER, &t2Callback);
+Task t2(2000, TASK_FOREVER, &t2Callback);
 Task t3(50, TASK_FOREVER, &t3Callback);
 Task t4(100, TASK_FOREVER, &t4Callback);
 Task t5(1000, TASK_FOREVER, &t5Callback);
+Task t6(50, TASK_FOREVER, &t6Callback);
 
 void task_setup() {
   runner.init();
@@ -762,15 +775,47 @@ void task_setup() {
   runner.addTask(t3);
   runner.addTask(t4);
   runner.addTask(t5);
+  runner.addTask(t6);
 
   t1.enable();
   t2.enable();
   t3.enable();
   t4.enable();
   t5.enable();
+  t6.enable();
 }
 // Task Function END of Line
 // ==================================================
+
+// ==================================================
+// Setup 2nd Core to run task
+// ==================================================
+TaskHandle_t Task1;
+
+void Task1_senddata(void * pvParameters ){
+  for (;;){
+    if(led_wifi_status == true){
+      digitalWrite(26, HIGH);       // sets the digital pin 13 on
+      delay(50);                    // waits for a second
+      digitalWrite(26, LOW);        // sets the digital pin 13 off
+      delay(50);
+    }
+    xPortGetCoreID();
+    // Serial.print("Task1_senddata Run on core number : ");
+    // Serial.println();
+  }
+}
+
+void Setup_2core(){
+  xTaskCreatePinnedToCore(
+  Task1_senddata,   // Run Function Name
+  "Task1",          // Task "name"
+  10000,            // Stack size
+  NULL,             // NULL
+  0,                // Priority
+  &Task1,           // Task name
+  0);               // Number of core
+}
 
 // ==================================================
 // System Setup
@@ -780,8 +825,12 @@ void setup () {
   SPIFFS_begin();
   QA_mode();
 
+  Setup_2core();
+  // delay(5000);
+
   // default_wifi();
-  Wifi_Setup(); // Wifi html keyin id/pwd
+  // Wifi_Setup(); // Wifi html keyin id/pwd
+
   AHT20_Setup();
   setup_isr();
   read_sensor_sn();
@@ -796,7 +845,9 @@ void setup () {
 // System Main Loop
 // ==================================================
 void loop () {
-  // checkButton();
   runner.execute();
-  // delay(50);
+  Serial.print("Main Loop Code Number : ");
+  Serial.println(xPortGetCoreID());
+
+  delay(1000);
 }

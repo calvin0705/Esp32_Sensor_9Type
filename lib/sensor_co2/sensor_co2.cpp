@@ -28,8 +28,10 @@ String sensor_data_transfer()
   String str_ppm;
   
   read_sensor();
-
   incoming  = SEN.readString();
+
+  // incoming[2] = 20;
+  // incoming[3] = 30;
 
   // for(byte i=0; i<incoming.length(); i++)
   // {
