@@ -28,7 +28,7 @@ void callback(char* topic, byte* message, unsigned int length);
 void connect_mqttServer();
 void client_publish(const char *topic, const char *payload);
 void client_conn();
-void connect_mqttServer();
+// void connect_mqttServer();
 
 bool led_wifi_status = true;
 
@@ -272,7 +272,7 @@ void Wifi_Setup() {
   wm.setMenu(menu);
 
   wm.setConfigPortalTimeout(100);
-  wm.setConnectTimeout(6);
+  wm.setConnectTimeout(8);
 
   bool res;
   
@@ -631,9 +631,13 @@ void task_isr() {
 // ==================================================
 // Scheduler runner;
 void t1Callback() { 
-
-  if (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED) 
+  {
     Wifi_Setup();
+  }
+  else
+  {
+    led_wifi_status = false;
   }
 }
 
