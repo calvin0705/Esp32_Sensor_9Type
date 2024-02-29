@@ -158,7 +158,7 @@ char mqtt_server[40];
 char sensor_correction[10];
 char sensor_correction2[10];
 
-unsigned int  timeout   = 180;
+// unsigned int  timeout   = 180;
 unsigned int  startTime = millis();
 bool portalRunning      = false;
 bool startAP = true;
@@ -271,8 +271,8 @@ void Wifi_Setup() {
   std::vector<const char *> menu = {"wifi","erase"};
   wm.setMenu(menu);
 
-  wm.setConfigPortalTimeout(120);
-  wm.setConnectTimeout(10);
+  wm.setConfigPortalTimeout(100);
+  wm.setConnectTimeout(6);
 
   bool res;
   
@@ -631,9 +631,10 @@ void task_isr() {
 // ==================================================
 // Scheduler runner;
 void t1Callback() { 
-  Wifi_Setup();
-  task_isr();
-  // Serial.println("t1 ======================");
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Wifi_Setup();
+  }
 }
 
 void t2Callback() {
@@ -732,10 +733,7 @@ void t3Callback() {
   // delay(2000);
   // Serial.printf("myFunction ==>> %d \n", result);
 
-  digitalWrite(26, HIGH);       // sets the digital pin 13 on
-  delay(1000);                  // waits for a second
-  digitalWrite(26, LOW);        // sets the digital pin 13 off
-  delay(1000);
+  task_isr();
 
   Serial.println("t3 ======================");
 }
@@ -758,12 +756,15 @@ void t5Callback() {
 }
 
 void t6Callback() {
-  // Wifi_Setup();
+  digitalWrite(26, HIGH);       // sets the digital pin 13 on
+  delay(1000);                  // waits for a second
+  digitalWrite(26, LOW);        // sets the digital pin 13 off
+  delay(1000);
 }
 
-Task t1(1000, TASK_FOREVER, &t1Callback);
+Task t1(10000, TASK_FOREVER, &t1Callback);
 Task t2(2000, TASK_FOREVER, &t2Callback);
-Task t3(50, TASK_FOREVER, &t3Callback);
+Task t3(800, TASK_FOREVER, &t3Callback);
 Task t4(100, TASK_FOREVER, &t4Callback);
 Task t5(1000, TASK_FOREVER, &t5Callback);
 Task t6(50, TASK_FOREVER, &t6Callback);
