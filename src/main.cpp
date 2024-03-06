@@ -371,7 +371,9 @@ void client_conn(){
     Serial.print("failed, rc=");
     Serial.print(client.state());
     Serial.println(" trying again in 2 seconds");
-    delay(5000);
+    checkButton();
+    delay(2000);
+    checkButton();
     First_set_mqtt = true;
 
     ESP.restart();
