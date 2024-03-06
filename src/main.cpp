@@ -311,7 +311,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 }
 
 void connect_mqttServer() {
-  // delay(1000);
+  delay(1000);
 
   if (!client.connected()) {
     client_conn();
@@ -363,20 +363,43 @@ void client_conn(){
 
   Serial.printf("\nCHIP MAC: %012llx\n", ESP.getEfuseMac());
   // if (client.connect("ESP32_client1")) { // !!! 12345 Change the name of client here if multiple ESP32 are connected
+  
+  int return_client;
+  return_client = client.connect(client_mac);
+  Serial.println("return_client ============================>>>>>>>>>>>>>> " + String(return_client));
+  delay(1000);
+  return_client = client.connect(client_mac);
+  Serial.println("return_client ============================>>>>>>>>>>>>>> " + String(return_client));
+  delay(1000);
+  return_client = client.connect(client_mac);
+  Serial.println("return_client ============================>>>>>>>>>>>>>> " + String(return_client));
+
   if (client.connect(client_mac)) {
+    Serial.println("return_client 11111111111111111111111111111111111111111 ");
     Serial.println("connected");
     client.subscribe("rpi/broadcast");
   } 
   else {
+    Serial.println("return_client 2222222222222222222222222222222 ");
     Serial.print("failed, rc=");
     Serial.print(client.state());
     Serial.println(" trying again in 2 seconds");
-    checkButton();
-    delay(2000);
-    checkButton();
+    // checkButton();
+    delay(1000);
+    
+    led_wifi_status = true;
+    if (!wm.startConfigPortal(AP_SSID_2,"00000000")) {
+      Serial.println("failed to connect or hit timeout");
+      delay(500);
+      // ESP.restart();
+    } else {
+      led_wifi_status = false;
+      Serial.println("connected...yeey :)");
+    }
+
     First_set_mqtt = true;
 
-    ESP.restart();
+    // ESP.restart();
   }
 }
 
